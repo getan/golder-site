@@ -2,6 +2,7 @@ name: deploy
 
 # main 分支 → 生产环境（golder-cli.pages.dev）
 # PR        → 预览环境（<branch>.golder-cli.pages.dev）
+# 未配置 CLOUDFLARE_* secrets 时只构建、跳过部署，CI 保持绿色。
 on:
   push:
     branches: [main]
@@ -10,7 +11,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -36,8 +36,41 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check Cloudflare credentials
+        id: cf
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Cloudflare secrets 未配置，跳过部署（见 README「首次配置」）"
+          fi
+
+      - name: Ensure Pages production branch is main
+        if: steps.cf.outputs.configured == 'true' && github.event_name == 'push'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Dashboard 直传项目若 production_branch 不是 main，--branch main 的部署
+          # 会落到 preview 环境、生产 URL 不更新；这里校正一次（幂等操作）。
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/golder-cli"
+          current=$(curl -fsS "$api" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result.production_branch')
+          echo "production_branch: $current"
+          if [ "$current" != "main" ]; then
+            curl -fsS -X PATCH "$api" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data '{"production_branch":"main"}' > /dev/null
+            echo "updated production_branch -> main"
+          fi
+
       - name: Deploy to Cloudflare Pages
         id: deploy
+        if: steps.cf.outputs.configured == 'true'
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -45,13 +78,15 @@ jobs:
           command: >-
             pages deploy dist
             --project-name golder-cli
-            --branch ${{ github.event_name == 'push' && 'main' || github.head_ref }}
+            --branch ${{ github.head_ref || 'main' }}
 
       - name: Report deployment URL
-        run: echo "deployed: ${{ steps.deploy.outputs.deployment-url }}"
+        if: steps.cf.outputs.configured == 'true'
+        run: |
+          echo "deployed: ${{ steps.deploy.outputs.deployment-url }}"
 
       - name: Assert project subdomain is the bare golder-cli.pages.dev
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && steps.cf.outputs.configured == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
