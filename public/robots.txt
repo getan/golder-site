@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://golder-cli.pages.dev/sitemap-index.xml

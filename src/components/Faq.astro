@@ -1,0 +1,25 @@
+---
+import type { Lang } from '../content';
+import { content, SITE } from '../content';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang].faq;
+const issueWord = lang === 'zh' ? '提 issue' : 'open an issue';
+---
+<section id="faq">
+  <div class="wrap faq">
+    <h2>{c.title}</h2>
+    <p class="section-sub">
+      {c.sub} <a href={SITE.issues} rel="noopener">{issueWord} ↗</a>
+    </p>
+    {c.items.map((item) => (
+      <details>
+        <summary>{item.q}</summary>
+        <p set:html={item.a} />
+      </details>
+    ))}
+  </div>
+</section>

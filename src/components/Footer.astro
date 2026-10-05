@@ -1,0 +1,23 @@
+---
+import { SITE, type Lang } from '../content';
+
+interface Props {
+  lang: Lang;
+  f: { license: string; siteSource: string; mainRepo: string; issues: string; releases: string };
+}
+const { lang, f } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      © {year} golder · {lang === 'zh' ? '用 Go 写成' : 'written in Go'} · {f.license}
+    </div>
+    <div class="links">
+      <a href={SITE.repo} rel="noopener">{f.mainRepo}</a>
+      <a href={SITE.siteRepo} rel="noopener">{f.siteSource}</a>
+      <a href={SITE.issues} rel="noopener">{f.issues}</a>
+      <a href={SITE.releases} rel="noopener">{f.releases}</a>
+    </div>
+  </div>
+</footer>

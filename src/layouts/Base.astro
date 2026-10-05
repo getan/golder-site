@@ -1,0 +1,52 @@
+---
+import { SITE, content, type Lang } from '../content';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  lang: Lang;
+  path: string; // 当前页路径，如 "/" 或 "/en/"
+  title: string;
+  description: string;
+  jsonLd?: Record<string, unknown>;
+}
+const { lang, path, title, description, jsonLd } = Astro.props;
+const t = content[lang];
+const canonical = new URL(path, SITE.url).href;
+
+// hreflang：中英互指，x-default 指向中文（与主仓 README 的语言权重一致）
+const zhPath = path.startsWith('/en') ? path.slice(3) || '/' : path;
+const enPath = `/en${zhPath === '/' ? '/' : zhPath}`;
+const zhUrl = new URL(zhPath, SITE.url).href;
+const enUrl = new URL(enPath, SITE.url).href;
+---
+<!doctype html>
+<html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0d1117" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="zh-CN" href={zhUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={zhUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="golder" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <Header lang={lang} nav={t.nav} path={path} />
+    <main>
+      <slot />
+    </main>
+    <Footer lang={lang} f={t.footer} />
+  </body>
+</html>

@@ -1,0 +1,30 @@
+---
+import type { Lang } from '../content';
+import { content } from '../content';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang].quickstart;
+---
+<section id="quickstart">
+  <div class="wrap">
+    <h2>{c.title}</h2>
+    <p class="section-sub">{c.sub}</p>
+    <div class="steps">
+      {c.steps.map((s, i) => (
+        <div class="step">
+          <div class="num">{i + 1}</div>
+          <div>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+            {s.codes.map((code) => (
+              <pre class="codeblock"><span class="p">$</span> {code}</pre>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

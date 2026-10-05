@@ -1,0 +1,61 @@
+---
+import { SITE, type Lang, content } from '../content';
+import Terminal from './Terminal.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang].hero;
+const copyLabel = lang === 'zh' ? '复制' : 'Copy';
+const copiedLabel = lang === 'zh' ? '已复制' : 'Copied';
+---
+<section class="hero" id="demo">
+  <div class="wrap">
+    <div class="eyebrow">{c.eyebrow}</div>
+    <h1>{c.title}</h1>
+    <p class="lead">{c.lead}</p>
+
+    <div class="cta-row">
+      <a class="btn primary" href="#quickstart">{c.ctaPrimary}</a>
+      <a class="btn" href={SITE.repo} rel="noopener">{c.ctaSecondary} ↗</a>
+    </div>
+
+    <div class="install">
+      <div class="row">
+        <span class="p">$</span>
+        <code>{SITE.installCmd}</code>
+        <button
+          class="copy-btn"
+          type="button"
+          data-copy={SITE.installCmd}
+          data-copied-label={copiedLabel}
+          aria-label={copyLabel}>{copyLabel}</button>
+      </div>
+      <div class="hint">{c.installHint}</div>
+    </div>
+
+    <Terminal title={c.terminalTitle} lines={c.terminal} />
+    <div class="demo-caption">{c.demoCaption}</div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('button[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-copy') ?? '';
+      const original = btn.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.dataset.done = '1';
+        btn.textContent = btn.dataset.copiedLabel ?? 'Copied';
+        setTimeout(() => {
+          btn.dataset.done = '0';
+          btn.textContent = original;
+        }, 1600);
+      } catch {
+        // 剪贴板不可用（http 或权限被拒）时静默失败：命令本身可手动选中
+      }
+    });
+  });
+</script>

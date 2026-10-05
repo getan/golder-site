@@ -1,0 +1,25 @@
+---
+import type { Lang } from '../content';
+import { content } from '../content';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang].features;
+---
+<section id="features">
+  <div class="wrap">
+    <h2>{c.title}</h2>
+    <p class="section-sub">{c.sub}</p>
+    <div class="grid">
+      {c.items.map((f) => (
+        <article class="card">
+          <h3><span class="icon"><Icon name={f.icon} /></span>{f.title}</h3>
+          <p>{f.body}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

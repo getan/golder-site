@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import { content, langPath, SITE } from '../content';
+
+const lang = 'zh' as const;
+const t = content[lang].notFound;
+---
+<Base lang={lang} path="/404" title={content[lang].meta.title} description={content[lang].meta.description}>
+  <div class="notfound">
+    <div>
+      <div class="code">404</div>
+      <h2>{t.title}</h2>
+      <p class="section-sub" style="margin-inline:auto">{t.body}</p>
+      <div class="cta-row">
+        <a class="btn primary" href={langPath(lang)}>{t.home}</a>
+        <a class="btn" href={SITE.repo} rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </div>
+</Base>

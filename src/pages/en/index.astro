@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Features from '../../components/Features.astro';
+import Quickstart from '../../components/Quickstart.astro';
+import Faq from '../../components/Faq.astro';
+import { content, SITE, stripTags } from '../../content';
+
+const lang = 'en' as const;
+const t = content[lang];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      name: 'golder',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'macOS, Linux, Windows',
+      description: t.meta.description,
+      license: 'https://opensource.org/licenses/MIT',
+      codeRepository: SITE.repo,
+      url: SITE.url,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      inLanguage: ['zh-CN', 'en'],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: t.faq.items.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: stripTags(item.a) },
+      })),
+    },
+  ],
+};
+---
+<Base
+  lang={lang}
+  path="/en/"
+  title={t.meta.title}
+  description={t.meta.description}
+  jsonLd={jsonLd}
+>
+  <Hero lang={lang} />
+  <Features lang={lang} />
+  <Quickstart lang={lang} />
+  <Faq lang={lang} />
+</Base>
