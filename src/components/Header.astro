@@ -11,10 +11,16 @@ const other = lang === 'en' ? 'zh' : 'en';
 // 语言切换：跳到同一页面的另一语言版本
 const zhPath = path.startsWith('/en') ? path.slice(3) || '/' : path;
 const otherPath = other === 'en' ? `/en${zhPath === '/' ? '/' : zhPath}` : zhPath;
+const latestLabel = lang === 'zh' ? '最新版' : 'latest';
 ---
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href={langPath(lang)}>golder<span class="cursor">_</span></a>
+    <a class="brand" href={langPath(lang)}>
+      golder<span class="cursor">_</span>
+      <span class="version" data-latest-badge hidden aria-label={latestLabel}>
+        <span data-latest-tag></span>
+      </span>
+    </a>
     <nav class="nav">
       <a href="#demo" class="hide-sm">{nav.demo}</a>
       <a href="#features" class="hide-sm">{nav.features}</a>
@@ -25,3 +31,23 @@ const otherPath = other === 'en' ? `/en${zhPath === '/' ? '/' : zhPath}` : zhPat
     </nav>
   </div>
 </header>
+
+<script>
+  // 版本角标：读本站 /api/latest（边缘缓存 1 小时）。失败就保持隐藏——
+  // 静态页面不依赖这个接口，接口挂了站点照常工作。
+  (async () => {
+    const badge = document.querySelector<HTMLElement>('[data-latest-badge]');
+    const tag = document.querySelector<HTMLElement>('[data-latest-tag]');
+    if (!badge || !tag) return;
+    try {
+      const res = await fetch('/api/latest', { headers: { accept: 'application/json' } });
+      if (!res.ok) return;
+      const data = (await res.json()) as { tag?: string };
+      if (!data.tag) return;
+      tag.textContent = data.tag;
+      badge.hidden = false;
+    } catch {
+      // 接口不可用：不显示角标即可
+    }
+  })();
+</script>

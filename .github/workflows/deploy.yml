@@ -36,6 +36,20 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Mirror install.sh from the main repo
+        run: |
+          # 把主仓库的安装脚本原样镜像到站点根路径 /install.sh，
+          # 缓解大陆访问 raw.githubusercontent.com 不稳定的问题。
+          # 同一份源码、同一个正式 Release；脚本自身带 sha256 校验。
+          set -euo pipefail
+          curl -fsSL --retry 3 \
+            "https://raw.githubusercontent.com/getan/golder/master/install.sh" \
+            -o dist/install.sh
+          head -n 1 dist/install.sh | grep -q '^#!/bin/sh' \
+            || { echo "::error::install.sh 内容异常（首行不是 #!/bin/sh）"; exit 1; }
+          # 记录指纹，便于与主仓库对照
+          echo "install.sh sha256: $(sha256sum dist/install.sh | cut -d' ' -f1)"
+
       - name: Check Cloudflare credentials
         id: cf
         env:

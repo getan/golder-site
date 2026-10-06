@@ -50,7 +50,7 @@ npm run deploy
 ## 里程碑（见 DESIGN.md）
 
 - [x] M1：真实 TUI 演示视频（VHS 录制）替换示意终端；海报兼作 OG 分享图
-- [ ] M2：`/install.sh` 镜像、`/api/latest` 版本接口
+- [x] M2：`/install.sh` 镜像（CI 从主仓库同步）、`/api/latest` 版本接口 + 页头版本角标
 - [ ] M2：主仓库 README 加官网链接
 
 ## 演示视频

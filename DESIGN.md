@@ -69,8 +69,21 @@ golder 的传播入口目前只有 GitHub README：没有独立的"门面"，安
 |---|---|---|
 | M0 | 独立仓库、Astro 双语骨架、Actions 部署管线、占名 | 本次完成 |
 | M1 | VHS 录制真实 TUI 演示（28s，2× 快放）替换示意终端；海报兼作 OG 分享图；`scripts/record-demo.sh` 一键重录 | 已完成 |
-| M2 | `/install.sh` 镜像（缓解 raw.githubusercontent 不稳）；`/api/latest` 版本角标；主仓库 README 加链接 | 待办 |
+| M2 | `/install.sh` 镜像（缓解 raw.githubusercontent 不稳）；`/api/latest` 版本角标；主仓库 README 加链接 | 已完成 |
 | P2 | `/dl/*` Release 二进制中转（需盯 100k 请求/天额度） | 未排期 |
+
+### M2 落地细节（2026-10-06）
+
+- **`/install.sh` 镜像**：CI 在构建后从 `raw.githubusercontent.com/getan/golder/master/install.sh`
+  拉取并写入 `dist/install.sh`（同一份源码，deploy 时带 `#!/bin/sh` 首行断言）。
+  站点根路径对大陆网络更友好；缓存 `max-age=3600`。
+- **主仓库 `install.sh` 同步升级**：新增 sha256 校验（对照 release 的 `checksums.txt`），
+  校验不通过即中止安装（已用投毒测试验证拦截）；版本查询优先走本站 `/api/latest`，
+  失败回退 GitHub API；版本号加字符集白名单。
+- **`/api/latest`**（`functions/api/latest.ts`）：首选用 `releases/latest` 的 302
+  `Location` 抠 tag（匿名、无限流），失败回退 GitHub REST API；Cache API 边缘缓存 1 小时，
+  浏览器 `max-age=300`。响应 `{tag,url}`，CORS 开放。
+- **页头版本角标**：前端 fetch `/api/latest`，失败静默隐藏——静态站不依赖该接口。
 
 ### M1 落地细节（2026-10-06）
 

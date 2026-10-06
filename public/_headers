@@ -9,3 +9,6 @@
 
 /demo/*
   Cache-Control: public, max-age=86400
+
+/install.sh
+  Cache-Control: public, max-age=3600

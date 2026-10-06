@@ -10,10 +10,9 @@ export const SITE = {
   issues: 'https://github.com/getan/golder/issues',
   changelog: 'https://github.com/getan/golder/blob/master/CHANGELOG.md',
   siteRepo: 'https://github.com/getan/golder-site',
-  // M2 计划：镜像到本站 /install.sh 后改为
-  //   curl -fsSL https://golder-cli.pages.dev/install.sh | sh
-  installCmd:
-    'curl -fsSL https://raw.githubusercontent.com/getan/golder/master/install.sh | sh',
+  // install.sh 由 CI 从主仓库镜像到本站（同一份源码，脚本自带 sha256 校验）；
+  // 站点域名对大陆网络更友好，raw.githubusercontent.com 时常不可达。
+  installCmd: 'curl -fsSL https://golder-cli.pages.dev/install.sh | sh',
 };
 
 export interface Feature {
