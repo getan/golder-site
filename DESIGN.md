@@ -68,9 +68,18 @@ golder 的传播入口目前只有 GitHub README：没有独立的"门面"，安
 | 里程碑 | 内容 | 状态 |
 |---|---|---|
 | M0 | 独立仓库、Astro 双语骨架、Actions 部署管线、占名 | 本次完成 |
-| M1 | VHS 录制真实 TUI 演示替换示意终端；OG 图 | 待办 |
+| M1 | VHS 录制真实 TUI 演示（28s，2× 快放）替换示意终端；海报兼作 OG 分享图；`scripts/record-demo.sh` 一键重录 | 已完成 |
 | M2 | `/install.sh` 镜像（缓解 raw.githubusercontent 不稳）；`/api/latest` 版本角标；主仓库 README 加链接 | 待办 |
 | P2 | `/dl/*` Release 二进制中转（需盯 100k 请求/天额度） | 未排期 |
+
+### M1 落地细节（2026-10-06）
+
+- 演示视频是**真实录制**：VHS 驱动终端跑完整会话（红测试 → 模型自主修复 → 全绿），
+  非合成动画；`fixture/slugkit` 的 bug 同时覆盖 read / bash / apply_patch 三类工具调用。
+- 首页 `<video>`：WebM（VP9，658 KB）优先、MP4（H.264，924 KB）兜底，
+  `autoplay muted loop playsinline` + `poster.jpg`；OG/Twitter 卡直接复用海报帧。
+- 录制脚本进仓库（`scripts/record-demo.sh` + `demo.tape` + fixture），TUI 改版后可一键重录；
+  脚本内置隔离纪律：`GOLDER_HOME` 指向临时目录，录后需人工过帧 + 敏感词扫描。
 
 ## Risks / 风险
 

@@ -1,6 +1,6 @@
 ---
 import { SITE, type Lang, content } from '../content';
-import Terminal from './Terminal.astro';
+import DemoVideo from './DemoVideo.astro';
 
 interface Props {
   lang: Lang;
@@ -35,8 +35,7 @@ const copiedLabel = lang === 'zh' ? '已复制' : 'Copied';
       <div class="hint">{c.installHint}</div>
     </div>
 
-    <Terminal title={c.terminalTitle} lines={c.terminal} />
-    <div class="demo-caption">{c.demoCaption}</div>
+    <DemoVideo title={c.videoTitle} caption={c.videoCaption} />
   </div>
 </section>
 

@@ -1,0 +1,30 @@
+---
+// 首屏演示视频：真实录制（用 VHS 跑的 golder 会话），不是合成的示意画面。
+// 资产在 public/demo/ 下，由 scripts/record-demo.sh 一键重录。
+interface Props {
+  title: string;
+  caption: string;
+}
+const { title, caption } = Astro.props;
+---
+<div class="demo">
+  <div class="demo-frame">
+    <div class="bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="title">{title}</span>
+    </div>
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster="/demo/poster.jpg"
+      aria-label={caption}
+    >
+      <source src="/demo/demo.webm" type="video/webm" />
+      <source src="/demo/demo.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="demo-caption">{caption}</div>
+</div>

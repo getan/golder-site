@@ -47,11 +47,23 @@ npm run deploy
 - 域名出现在两处：`astro.config.mjs` 的 `site` 和 `src/content.ts` 的 `SITE.url`；
   将来绑定自有域名时改这两处 + Cloudflare 后台加自定义域即可，页面代码不用动。
 
-## 待办（见 DESIGN.md 里程碑）
+## 里程碑（见 DESIGN.md）
 
-- [ ] M1：录制真实 TUI 演示（VHS），替换 Hero 里的示意终端
+- [x] M1：真实 TUI 演示视频（VHS 录制）替换示意终端；海报兼作 OG 分享图
 - [ ] M2：`/install.sh` 镜像、`/api/latest` 版本接口
 - [ ] M2：主仓库 README 加官网链接
+
+## 演示视频
+
+首屏那段 28 秒的视频是**真实录制**的 golder 会话（go test 红 → 模型自主修复 → 全绿）。
+源码更新后想刷新它：
+
+```bash
+brew install vhs
+scripts/record-demo.sh ../golder
+```
+
+详见 [scripts/README.md](./scripts/README.md)（含隐私红线检查清单）。
 
 ## License
 

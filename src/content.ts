@@ -16,11 +16,6 @@ export const SITE = {
     'curl -fsSL https://raw.githubusercontent.com/getan/golder/master/install.sh | sh',
 };
 
-export interface TermLine {
-  cls: 'cmd' | 'prompt' | 'tool' | 'ok' | 'warn' | 'meta';
-  text: string;
-}
-
 export interface Feature {
   icon: string;
   title: string;
@@ -60,19 +55,8 @@ const zh = {
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     installHint: 'macOS / Linux 一键安装 · Windows 从 Releases 下载 zip · 不需要任何运行时',
-    terminalTitle: 'golder — 修复 /rewind 竞态',
-    terminal: [
-      { cls: 'cmd', text: '$ golder' },
-      { cls: 'meta', text: 'opencode-go · deepseek-v4.1-flash · thinking: max' },
-      { cls: 'prompt', text: '修复 /rewind 在并发会话下的竞态' },
-      { cls: 'tool', text: '● read        internal/session/session.go' },
-      { cls: 'tool', text: '● grep        "snapshot" -C 3            ✓ 6 处匹配' },
-      { cls: 'warn', text: '⚠ 自动审批通过（bash，风险：低，授权：高）：仅运行测试，无副作用' },
-      { cls: 'tool', text: '● bash        go test ./internal/session/...  ✓ ok (4.2s)' },
-      { cls: 'tool', text: '● apply_patch （2 个文件，+37 −12）' },
-      { cls: 'ok', text: '✓ 已修复：Rewrite 状态在快照落盘前就被发布（含回归测试）' },
-    ] as TermLine[],
-    demoCaption: '终端会话示意 · 完整演示稍后补上',
+    videoTitle: 'golder — 真实会话（2× 快放）',
+    videoCaption: '真实录制，无剪辑造假：go test 红 → 模型自主修复 → 全绿收尾（28 秒）',
   },
   features: {
     title: '不是又一个壳',
@@ -207,19 +191,8 @@ const en = {
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     installHint: 'One-line install for macOS / Linux · Windows: download the zip from Releases · no runtime required',
-    terminalTitle: 'golder — race in /rewind',
-    terminal: [
-      { cls: 'cmd', text: '$ golder' },
-      { cls: 'meta', text: 'opencode-go · deepseek-v4.1-flash · thinking: max' },
-      { cls: 'prompt', text: 'fix the /rewind race under concurrent sessions' },
-      { cls: 'tool', text: '● read        internal/session/session.go' },
-      { cls: 'tool', text: '● grep        "snapshot" -C 3            ✓ 6 matches' },
-      { cls: 'warn', text: '⚠ auto-approved (bash, risk: low, authorization: high): tests only, no side effects' },
-      { cls: 'tool', text: '● bash        go test ./internal/session/...  ✓ ok (4.2s)' },
-      { cls: 'tool', text: '● apply_patch (2 files, +37 −12)' },
-      { cls: 'ok', text: '✓ fixed: rewind state was published before the snapshot hit disk (regression test added)' },
-    ] as TermLine[],
-    demoCaption: 'Illustrative terminal session · recorded demo coming soon',
+    videoTitle: 'golder — a real session (2× speed)',
+    videoCaption: 'Recorded for real, nothing staged: red tests → autonomous fix → all green (28s)',
   },
   features: {
     title: 'Not another wrapper',
