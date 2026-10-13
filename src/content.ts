@@ -54,8 +54,9 @@ const zh = {
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     installHint: 'macOS / Linux 一键安装 · Windows 从 Releases 下载 zip · 不需要任何运行时',
-    videoTitle: 'golder — 真实会话（2× 快放）',
-    videoCaption: '真实录制，无剪辑造假：go test 红 → 模型自主修复 → 全绿收尾（28 秒）',
+    videoTitle: 'golder — 真实会话（空闲段已掐掉）',
+    videoCaption:
+      '真实录制，无剪辑造假：go test 红 → 模型自己读码、打补丁、复跑 → 全绿收尾（26 秒）',
   },
   features: {
     title: '不是又一个壳',
@@ -90,6 +91,18 @@ const zh = {
         title: '会话是资产',
         body:
           '/resume 历史会话、/fork 从任意消息分叉、/tree 浏览分支树、/rewind 把文件与对话一起回滚、/export 往返存档。',
+      },
+      {
+        icon: 'shield',
+        title: '读取越界要先问过你',
+        body:
+          '读取类工具默认只读工作区；越界会先弹窗问——只读这一次、本会话允许该目录，或记住（写入 permissions.toml）。没人可问时（无头、子 Agent）失败关闭。完全放行关掉的是审查与沙箱，不是知情同意。',
+      },
+      {
+        icon: 'terminal',
+        title: '跑在 tuios / herdr 里就是一个 agent',
+        body:
+          '在 tuios 窗口或 herdr pane 里启动，golder 自己上报状态：rail 上出现工作 / 等你 / 完成，审批与提问进 Inbox，daemon 重启后带着 golder --resume 回到原会话。两个宿主都不用改，tuios 只需装一份 harness manifest。',
       },
       {
         icon: 'globe',
@@ -190,8 +203,9 @@ const en = {
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     installHint: 'One-line install for macOS / Linux · Windows: download the zip from Releases · no runtime required',
-    videoTitle: 'golder — a real session (2× speed)',
-    videoCaption: 'Recorded for real, nothing staged: red tests → autonomous fix → all green (28s)',
+    videoTitle: 'golder — a real session (idle time trimmed)',
+    videoCaption:
+      'Recorded for real, nothing staged: red tests → the model reads, patches, re-runs → all green (26s)',
   },
   features: {
     title: 'Not another wrapper',
@@ -226,6 +240,18 @@ const en = {
         title: 'Sessions are assets',
         body:
           '/resume past sessions, /fork from any message, /tree to browse branches, /rewind to roll back files and conversation together, /export for round-trip archives.',
+      },
+      {
+        icon: 'shield',
+        title: 'Reads outside the workspace ask first',
+        body:
+          'The read tools stay inside the workspace until you say otherwise — the dialog offers just this read, this session for that directory, or remembered (written to permissions.toml). With nobody to ask (headless, a sub-agent) it fails closed. Full-access turns off review, not consent.',
+      },
+      {
+        icon: 'terminal',
+        title: 'A first-class agent in tuios / herdr',
+        body:
+          'Start it in a tuios window or a herdr pane and golder reports its own state: it shows up on the rail (working / waiting on you / done), approvals land in the Inbox, and a daemon restart brings the conversation back with golder --resume. Neither host changes; tuios needs one harness manifest.',
       },
       {
         icon: 'globe',

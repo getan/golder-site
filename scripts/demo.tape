@@ -23,14 +23,14 @@ Sleep 600ms
 Type "go test ./..." Enter
 Sleep 2800ms
 
-# 2) 启动 golder 全屏 TUI（splash 会打出 golder 字样）
-Type "golder" Enter
-Sleep 8s
+# 2) 启动 golder 全屏 TUI（splash 会打出 golder 字样），并把任务交给 agent。
+#
+# 中文任务不在 tape 里：vhs 的 Type / Paste 注入非 ASCII 字符会卡死（scripts/README.md
+# 有最小复现），所以下面每一行都必须保持 ASCII；任务由 scripts/demo-drive.py 直接
+# 写进 golder 的 PTY，它 8 秒后开始输入，之后把 ttyd 的按键原样转发给 golder。
+Type "python3 /tmp/demo/drive.py" Enter
+Sleep 188s
 
-# 3) 把任务交给 agent，留 180s 真实工作时间
-Type "修复失败的测试用例，让 go test 全部通过" Enter
-Sleep 180s
-
-# 4) 干净退出（成片不含这一段）
+# 3) 干净退出（成片不含这一段；这一行由 drive.py 转发给 golder）
 Type "/exit" Enter
 Sleep 1500ms

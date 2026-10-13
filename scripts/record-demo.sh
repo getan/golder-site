@@ -23,10 +23,17 @@ say() { printf '[record-demo] %s\n' "$*" >&2; }
 need() { command -v "$1" >/dev/null 2>&1 || { say "缺少依赖: $1"; exit 1; }; }
 need vhs; need ffmpeg; need go
 
+# 摘掉宿主环境：录制机器自己若跑在 tuios / herdr 的 pane 里，这层 TUIOS_* /
+# HERDR_* 会被演示进程继承，而新版的 golder 会按这些变量认出宿主并上报状态——
+# 于是录屏里的 golder 会朝**真实的** daemon（乃至你正看着的 Inbox / rail）发消息。
+# 实测被 tuios 的 nested 守卫挡下，但这是噪音，也可能让画面带上宿主才有的痕迹。
+# 演示要的是干净环境，所以在这里一次性摘干净。
+for v in $(env | cut -d= -f1 | grep -E '^(TUIOS|HERDR)_'); do unset "$v"; done
+
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 
 # 1) 用当前分支源码构建演示二进制（带版本号，splash 里会显示）
-say "构建 golder（$GOLDER_REPO）..."
+say "构建 golder（${GOLDER_REPO}）..."
 mkdir -p "$DEMO_BIN"
 version=$(cd "$GOLDER_REPO" && git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')
 [ -n "$version" ] || version=dev
@@ -40,8 +47,11 @@ say "准备演示项目 $DEMO_ROOT/slugkit ..."
 rm -rf "$DEMO_ROOT" "$DEMO_HOME"
 mkdir -p "$DEMO_ROOT" "$DEMO_HOME"
 cp -R "$SCRIPT_DIR/fixture/slugkit" "$DEMO_ROOT/slugkit"
-# 预置信任，免得录到询问弹窗
-printf '{"/tmp/demo/slugkit": true}' > "$DEMO_HOME/trust.json"
+# 中文任务的注入桥（tape 里只打 ASCII，见 scripts/README.md）
+cp "$SCRIPT_DIR/demo-drive.py" "$DEMO_ROOT/drive.py"
+# 预置信任，免得录到询问弹窗。/tmp 在 macOS 上是到 /private/tmp 的符号链接，而 trust.json 的键是 golder 启动时
+# 解析出的工作目录：两种拼法都写上，免得录到一半弹出信任询问把画面卡住。
+printf '{"/tmp/demo/slugkit": true, "/private/tmp/demo/slugkit": true}' > "$DEMO_HOME/trust.json"
 
 # 3) 录制（tape 直接输出到 /tmp/demo/raw.mp4）
 say "开始录制（约 3.5 分钟）..."
