@@ -36,7 +36,7 @@ const zh = {
   meta: {
     title: 'golder — 终端里的 AI 编码助手',
     description:
-      '用 Go 编写的终端 AI 编码助手：读写文件、执行命令、检索代码、抓取网页，在对话中完成从理解需求到改好代码的闭环。单二进制，MIT 开源。',
+      '用 Go 编写的终端 AI 编码助手：读写文件、执行命令、检索代码、抓取网页，在对话中完成从理解需求到改好代码的闭环。单二进制、不锁定厂商，MIT 开源。',
   },
   nav: {
     demo: '演示',
@@ -70,33 +70,33 @@ const zh = {
       },
       {
         icon: 'shield',
-        title: '审批由会话模型亲自做',
+        title: '每个改动型调用都过审查，并给一行理由',
         body:
-          '四档权限：只读 / 每次询问 / 自动 / 完全放行。auto 档对每次改动型调用做一次严格 JSON 评审并给出一行中文理由——不引入额外的分类服务或密钥。',
+          '四档权限：只读 / 每次询问 / 自动 / 完全放行。auto 档每次改动型调用都先问决策模型（typesafe），拿不准再升级给会话模型——低风险放行、需隔离的进沙箱、高危拒绝，理由用对话语言写在卡片上；没有决策模型凭据时改走本地规则表。',
       },
       {
         icon: 'box',
         title: '操作系统级沙箱',
         body:
-          'macOS 用 sandbox-exec、Linux 用 bubblewrap：读白名单（$HOME 里的密钥、凭据、历史一律读不到）、写限项目与临时目录、网络默认关闭。',
+          'macOS 用 sandbox-exec、Linux 用 bubblewrap：读白名单（$HOME 里的密钥、凭据、历史一律读不到）、写限项目与临时目录、网络默认关闭且按次授权。效果能从命令完整读出的调用（git push、go test…）不再多套一层沙箱，卡片上标 ·unconfined；其余标 ·sandbox。',
       },
       {
         icon: 'gauge',
         title: '长任务不掉线',
         body:
-          '/compact 压缩、上下文预算工具、/goal 自主目标循环、子 Agent 派发、持久记忆与 /dream 整理——跑几小时的大活有配套的兜底。',
+          '/compact 压缩、上下文预算工具、/goal 自主目标循环、子 Agent 派发、持久记忆与 /dream 整理——跑几小时的大活有配套的兜底；连接中途断掉时从断点续写，不丢整轮。',
       },
       {
         icon: 'branch',
         title: '会话是资产',
         body:
-          '/resume 历史会话、/fork 从任意消息分叉、/tree 浏览分支树、/rewind 把文件与对话一起回滚、/export 往返存档。',
+          '/resume 历史会话、/fork 从任意消息分叉、/tree 浏览分支树、/rewind 把文件与对话一起回滚、/export 往返存档。会话不绑厂商：换网关后用 /resume 在当前 provider 上继续同一份上下文。',
       },
       {
         icon: 'shield',
         title: '读取越界要先问过你',
         body:
-          '读取类工具默认只读工作区；越界会先弹窗问——只读这一次、本会话允许该目录，或记住（写入 permissions.toml）。没人可问时（无头、子 Agent）失败关闭。完全放行关掉的是审查与沙箱，不是知情同意。',
+          '读取类工具默认只读工作区；越界会先弹窗问——只读这一次、本会话允许该目录，或记住（写进授权表，/boundary 可查）。没人可问时（无头、子 Agent）失败关闭。完全放行关掉的是审查与沙箱，不是知情同意。',
       },
       {
         icon: 'terminal',
@@ -108,7 +108,7 @@ const zh = {
         icon: 'globe',
         title: '网络现实友好',
         body:
-          '40+ 网关（OpenAI / Anthropic / DeepSeek / OpenRouter / Ollama…），/proxy 按 provider 单独走代理，未选中的直连、不继承 shell 的 HTTP_PROXY。',
+          '20 个内置网关，覆盖 OpenAI Chat / OpenAI Responses / Anthropic Messages / Gemini 四种线上协议，也可指向任意 OpenAI 兼容端点；网络默认关闭，auto 档下随评审通过的调用一起授权（/network follow 默认开，off 恢复逐次询问），也可对某个 host / 命令预授权。/proxy 按 provider 单独走代理，未选中的直连、不继承 shell 的 HTTP_PROXY。',
       },
     ] as Feature[],
   },
@@ -147,11 +147,11 @@ const zh = {
       },
       {
         q: '支持哪些模型？',
-        a: '内置 40+ 网关，可用 /provider 和 /model 在会话内切换，推理档位从 off 到 max；也可以指向本地 Ollama。',
+        a: '内置 20 个网关（19 个会话网关 + 审批用的决策模型 typesafe，它不接会话）。会话不绑厂商：/provider 换网关后用 /resume 继续同一份上下文，/provider default <名称> 把常用网关设为新会话默认；推理档位 off 到 max，也可以指向本地 Ollama。',
       },
       {
         q: '安全吗？它会乱改我的文件吗？',
-        a: '默认 auto 档：每次改动型调用先由当前模型审查，低风险放行、可隔离的进沙箱、高危拒绝，并给出一行理由。想先观察可以切到 read-only。',
+        a: '三道门：静态硬拒（sudo、rm -rf /、写 ~/.ssh 与凭据路径直接拒绝，凭据永远不可授权）→ 逐调用审查（auto 档每次改动型调用都过决策模型，拿不准升级给会话模型：低风险放行、需隔离的进沙箱、高危拒绝，各给一行理由）→ OS 沙箱（读白名单、写限项目与临时目录；网络默认关闭，随评审通过的调用一起授权，可用 /network follow off 改为逐次询问）。想先观察可以切到 read-only。',
       },
       {
         q: '国内网络能用吗？',
@@ -185,7 +185,7 @@ const en = {
   meta: {
     title: 'golder — the AI coding agent in your terminal',
     description:
-      'A terminal AI coding agent written in Go: read and write files, run commands, search code, fetch the web — closing the loop from understanding a task to shipping the change. Single binary, MIT.',
+      'A terminal AI coding agent written in Go: read and write files, run commands, search code, fetch the web — closing the loop from understanding a task to shipping the change. Single binary, no vendor lock-in, MIT.',
   },
   nav: {
     demo: 'Demo',
@@ -219,33 +219,33 @@ const en = {
       },
       {
         icon: 'shield',
-        title: 'Approvals reviewed by the session model',
+        title: 'Every mutating call gets reviewed, with a one-line rationale',
         body:
-          'Four permission modes: read-only / ask / auto / full-access. In auto, every mutating call gets a strict JSON review with a one-line rationale — no separate classifier service or API key.',
+          'Four permission modes: read-only / ask / auto / full-access. In auto every mutating call goes to the decision model first (typesafe), escalating to the session model when it is unsure — low risk runs, isolatable calls are contained, dangerous ones are denied, each with a rationale written in the conversation’s own language. Without a decision-model credential the local rule table takes that slot.',
       },
       {
         icon: 'box',
         title: 'OS-level sandboxing',
         body:
-          'sandbox-exec on macOS, bubblewrap on Linux: read allow-list (secrets, credentials and history under $HOME are unreadable), writes limited to the project and temp dirs, network off by default.',
+          'sandbox-exec on macOS, bubblewrap on Linux: read allow-list (secrets, credentials and history under $HOME are unreadable), writes limited to the project and temp dirs, network off by default and granted per call. A call whose whole effect is readable from its command (git push, go test, …) skips the extra sandbox and is marked ·unconfined; everything else is marked ·sandbox.',
       },
       {
         icon: 'gauge',
         title: 'Built for long tasks',
         body:
-          '/compact summarization, context-budget tools, autonomous /goal loops, sub-agent dispatch, persistent memory and /dream consolidation.',
+          '/compact summarization, context-budget tools, autonomous /goal loops, sub-agent dispatch, persistent memory and /dream consolidation; a stream cut mid-answer continues from where it stopped instead of losing the turn.',
       },
       {
         icon: 'branch',
         title: 'Sessions are assets',
         body:
-          '/resume past sessions, /fork from any message, /tree to browse branches, /rewind to roll back files and conversation together, /export for round-trip archives.',
+          '/resume past sessions, /fork from any message, /tree to browse branches, /rewind to roll back files and conversation together, /export for round-trip archives. Sessions are not tied to a vendor: switch gateways and /resume continues the same context on the current provider.',
       },
       {
         icon: 'shield',
         title: 'Reads outside the workspace ask first',
         body:
-          'The read tools stay inside the workspace until you say otherwise — the dialog offers just this read, this session for that directory, or remembered (written to permissions.toml). With nobody to ask (headless, a sub-agent) it fails closed. Full-access turns off review, not consent.',
+          'The read tools stay inside the workspace until you say otherwise — the dialog offers just this read, this session for that directory, or remembered (written to the authorization table, shown by /boundary). With nobody to ask (headless, a sub-agent) it fails closed. Full-access turns off review, not consent.',
       },
       {
         icon: 'terminal',
@@ -257,7 +257,7 @@ const en = {
         icon: 'globe',
         title: 'Real-world networking',
         body:
-          '40+ gateways (OpenAI / Anthropic / DeepSeek / OpenRouter / Ollama…). /proxy routes per provider: unselected ones go direct and ignore the shell’s HTTP_PROXY.',
+          '20 built-in gateways across four wire formats — OpenAI Chat, OpenAI Responses, Anthropic Messages, Gemini — plus any OpenAI-compatible endpoint; the network is off by default and granted with the call the reviewer approved under auto (/network follow ships on; turn it off for a per-call question), and a host or command can be pre-authorized. /proxy routes per provider: unselected ones go direct and ignore the shell’s HTTP_PROXY.',
       },
     ] as Feature[],
   },
@@ -296,11 +296,11 @@ const en = {
       },
       {
         q: 'Which models are supported?',
-        a: '40+ built-in gateways, switchable at runtime with /provider and /model, reasoning levels from off to max — or point it at a local Ollama.',
+        a: '20 built-in gateways (19 conversation gateways plus the typesafe decision model, which does not serve conversations). Sessions are not tied to a vendor: switch with /provider and keep going with /resume on the new one, and /provider default <name> makes a gateway the default for new sessions. Reasoning levels run from off to max — or point it at a local Ollama.',
       },
       {
         q: 'Is it safe? Will it edit my files behind my back?',
-        a: 'The default auto mode reviews every mutating call with the active model: low risk runs, isolatable calls go into the sandbox, dangerous ones are denied — each with a one-line rationale. Switch to read-only to just watch.',
+        a: 'Three gates: a static hard-deny (sudo, rm -rf /, writes to ~/.ssh or credential material are refused outright — credentials are never grantable) → a per-call review (in auto every mutating call goes to the decision model, escalating to the session model when unsure: low risk runs, isolatable calls are contained, dangerous ones are denied, each with a one-line rationale) → the OS sandbox (read allow-list, writes limited to the project and temp dirs; the network is off by default and granted with the call the reviewer approved — /network follow off restores a per-call question). Switch to read-only to just watch.',
       },
       {
         q: 'Does the site work from mainland China?',
