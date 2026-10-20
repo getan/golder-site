@@ -13,6 +13,11 @@ interface Props {
 }
 const { lang, path, title, description, jsonLd } = Astro.props;
 const t = content[lang];
+// Analytics is opt-in: no account configured means no third-party request.
+// PUBLIC_GOATCOUNTER is inlined at build time; the preview build stays clean.
+const goatcounter = import.meta.env.PROD
+  ? String((import.meta.env as Record<string, unknown>).PUBLIC_GOATCOUNTER ?? '').replace(/\/$/, '')
+  : '';
 const canonical = new URL(path, SITE.url).href;
 
 // hreflang：中英互指，x-default 指向中文（与主仓 README 的语言权重一致）
@@ -52,5 +57,13 @@ const enUrl = new URL(enPath, SITE.url).href;
       <slot />
     </main>
     <Footer lang={lang} f={t.footer} />
+    {goatcounter && (
+      <script
+        is:inline
+        async
+        src="https://gc.zgo.at/count.js"
+        data-goatcounter={`${goatcounter}/count`}
+      ></script>
+    )}
   </body>
 </html>

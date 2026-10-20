@@ -34,6 +34,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          PUBLIC_GOATCOUNTER: ${{ vars.PUBLIC_GOATCOUNTER }}
         run: npm run build
 
       - name: Mirror install.sh from the main repo

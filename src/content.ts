@@ -53,7 +53,7 @@ const zh = {
       'golder 用 Go 写成一个单二进制：读写文件、执行命令、检索代码、抓取网页，把「理解需求 → 改好代码」跑成闭环。默认进入全屏 TUI，也能无头跑进脚本和 CI。',
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
-    installHint: 'macOS / Linux 一键安装 · Windows 从 Releases 下载 zip · 不需要任何运行时',
+    installHint: 'macOS: brew install getan/tap/golder · Linux: 一键脚本 · Windows 从 Releases 下载 zip · 不需要任何运行时',
     videoTitle: 'golder — 真实会话（空闲段已掐掉）',
     videoCaption:
       '真实录制，无剪辑造假：go test 红 → 模型自己读码、打补丁、复跑 → 全绿收尾（26 秒）',
@@ -79,6 +79,12 @@ const zh = {
         title: '操作系统级沙箱',
         body:
           'macOS 用 sandbox-exec、Linux 用 bubblewrap：读白名单（$HOME 里的密钥、凭据、历史一律读不到）、写限项目与临时目录、网络默认关闭且按次授权。效果能从命令完整读出的调用（git push、go test…）不再多套一层沙箱，卡片上标 ·unconfined；其余标 ·sandbox。',
+      },
+      {
+        icon: 'key',
+        title: '凭据在发给模型前脱敏',
+        body:
+          '工具输出、prompt、压缩摘要、记忆与 session 落盘前统一扫描；覆盖 AWS/GCP/Azure/GitHub/GitLab/Slack/Stripe/OpenAI/Anthropic/JWT/PEM/DB URL，支持 off / observe / redact / block 四档，审计只记规则名与 hash。写文件时才还原占位符。',
       },
       {
         icon: 'gauge',
@@ -118,8 +124,8 @@ const zh = {
     steps: [
       {
         title: '安装',
-        body: '一条命令装好，自动识别系统与架构；Windows 从 Releases 下载 .zip 解压即可。',
-        codes: [SITE.installCmd],
+        body: 'macOS 用 Homebrew，Linux 用一键脚本；都会识别系统与架构。Windows 从 Releases 下载 .zip 解压即可。',
+        codes: ['brew install getan/tap/golder', SITE.installCmd],
       },
       {
         title: '配置凭证',
@@ -202,7 +208,7 @@ const en = {
       'golder is a single Go binary: read and write files, run commands, search code, fetch the web — closing the loop from “understand the task” to “the change is in”. Full-screen TUI by default, headless for scripts and CI.',
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
-    installHint: 'One-line install for macOS / Linux · Windows: download the zip from Releases · no runtime required',
+    installHint: 'macOS: brew install getan/tap/golder · Linux: one-line script · Windows: zip from Releases · no runtime required',
     videoTitle: 'golder — a real session (idle time trimmed)',
     videoCaption:
       'Recorded for real, nothing staged: red tests → the model reads, patches, re-runs → all green (26s)',
@@ -228,6 +234,12 @@ const en = {
         title: 'OS-level sandboxing',
         body:
           'sandbox-exec on macOS, bubblewrap on Linux: read allow-list (secrets, credentials and history under $HOME are unreadable), writes limited to the project and temp dirs, network off by default and granted per call. A call whose whole effect is readable from its command (git push, go test, …) skips the extra sandbox and is marked ·unconfined; everything else is marked ·sandbox.',
+      },
+      {
+        icon: 'key',
+        title: 'Secrets are redacted before the model sees them',
+        body:
+          'Tool output, prompts, compaction summaries, memory and session files are scanned first; AWS/GCP/Azure/GitHub/GitLab/Slack/Stripe/OpenAI/Anthropic/JWT/PEM/DB URL rules, off / observe / redact / block modes, and an audit log with rule names and hashes only. Placeholders are restored only for file writes.',
       },
       {
         icon: 'gauge',
@@ -267,8 +279,8 @@ const en = {
     steps: [
       {
         title: 'Install',
-        body: 'One command detects OS and architecture. On Windows, download the .zip from Releases.',
-        codes: [SITE.installCmd],
+        body: 'Homebrew on macOS, the one-line script on Linux; both detect the architecture. On Windows, download the .zip from Releases.',
+        codes: ['brew install getan/tap/golder', SITE.installCmd],
       },
       {
         title: 'Configure a credential',

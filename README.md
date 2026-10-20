@@ -54,6 +54,19 @@ npm run deploy
 `purge: …not configured`）；只有站点有、主仓库没配，workflow 会打印一条 notice
 跳过——两种都不会让发布失败。
 
+### 访问统计（可选）
+
+本站不默认加载任何分析脚本。要启用 [GoatCounter](https://www.goatcounter.com/)：
+
+1. 在 GoatCounter 建一个站点，拿到地址（如 `https://golder.goatcounter.com`）。
+2. 在 GitHub 仓库的 **Settings → Secrets and variables → Actions → Variables**
+   添加 `PUBLIC_GOATCOUNTER`，值为上面的地址。
+3. 重新跑一次 deploy workflow；构建时 `src/layouts/Base.astro` 会在 `</body>` 前
+   注入 `count.js`，只统计生产构建（PR 预览不统计）。
+
+没设置这个变量时不会发出任何第三方请求。Cloudflare Pages 的 runtime 环境变量
+不参与 Astro 构建，所以不要配在 Pages 项目里。
+
 ## `/api/latest` 的缓存策略
 
 页头版本角标与主仓库的 `golder update` / `install.sh` 读的都是 `/api/latest`。
