@@ -3,7 +3,7 @@ import { SITE, langPath, type Lang } from '../content';
 
 interface Props {
   lang: Lang;
-  nav: { demo: string; features: string; quickstart: string; faq: string; github: string; switch: string };
+  nav: { demo: string; features: string; highlights: string; quickstart: string; faq: string; github: string; switch: string };
   path: string;
 }
 const { lang, nav, path } = Astro.props;
@@ -23,6 +23,7 @@ const latestLabel = lang === 'zh' ? '最新版' : 'latest';
     </a>
     <nav class="nav">
       <a href="#demo" class="hide-sm">{nav.demo}</a>
+      <a href="#highlights" class="hide-sm">{nav.highlights}</a>
       <a href="#features" class="hide-sm">{nav.features}</a>
       <a href="#quickstart" class="hide-sm">{nav.quickstart}</a>
       <a href="#faq" class="hide-sm">{nav.faq}</a>

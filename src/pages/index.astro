@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Highlights from '../components/Highlights.astro';
 import Features from '../components/Features.astro';
 import Quickstart from '../components/Quickstart.astro';
 import Faq from '../components/Faq.astro';
@@ -37,7 +38,8 @@ const jsonLd = {
 ---
 <Base lang={lang} path="/" title={t.meta.title} description={t.meta.description} jsonLd={jsonLd}>
   <Hero lang={lang} />
-  <Features lang={lang} />
+  <Highlights lang={lang} />
   <Quickstart lang={lang} />
+  <Features lang={lang} />
   <Faq lang={lang} />
 </Base>

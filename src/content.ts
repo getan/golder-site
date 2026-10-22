@@ -41,6 +41,7 @@ const zh = {
   nav: {
     demo: '演示',
     features: '特性',
+    highlights: '亮点',
     quickstart: '上手',
     faq: 'FAQ',
     github: 'GitHub',
@@ -58,8 +59,48 @@ const zh = {
     videoCaption:
       '真实录制，无剪辑造假：go test 红 → 模型自己读码、打补丁、复跑 → 全绿收尾（26 秒）',
   },
+  highlights: {
+    title: '为什么是 golder',
+    sub: '装好就能用；真正的差别在这六件事。',
+    items: [
+      {
+        icon: 'globe',
+        title: '多 Provider 热切换，会话不绑定厂商',
+        body:
+          '/provider 随时换网关，/resume 在当前 provider 上继续同一份上下文；内置 19 个会话网关，覆盖 OpenAI Chat / Responses、Anthropic Messages、Gemini 四种线上协议，也可指向任意兼容端点。',
+      },
+      {
+        icon: 'shield',
+        title: '轻量 agent + 真正的安全边界',
+        body:
+          '和 pi 同一量级的单二进制，但多了逐调用审批门与 OS 沙箱（sandbox-exec / bubblewrap）：读限工作区、写限项目与临时目录、网络默认关闭；密钥和凭据路径读不到。',
+      },
+      {
+        icon: 'terminal',
+        title: '比 codex-cli 更容易定制',
+        body:
+          '纯 Go，单语言、单二进制，没有 Node/Python 运行时；加一个工具、一个 provider 或一条审批规则，都在同一个 go build 里完成。',
+      },
+      {
+        icon: 'gauge',
+        title: '常驻内存约 50–100 MB',
+        body: '同类里的第一梯队，长时间挂着跑也不占机器。',
+      },
+      {
+        icon: 'box',
+        title: '规划中：tuios + kitty-browse',
+        body:
+          '窗口与浏览器的自由 agent 操作；前后端同时 debug 时，模型能同时看到终端、编辑器、浏览器，上下文最充分。',
+      },
+      {
+        icon: 'branch',
+        title: '规划中：MCP 与插件生态',
+        body: '把外部工具和数据源接进来，扩展不必改核心。',
+      },
+    ] as Feature[],
+  },
   features: {
-    title: '不是又一个壳',
+    title: '更多特性',
     sub: '安全边界、长任务、会话管理都是内建的——这些才是每天用得到的部分。',
     items: [
       {
@@ -196,6 +237,7 @@ const en = {
   nav: {
     demo: 'Demo',
     features: 'Features',
+    highlights: 'Highlights',
     quickstart: 'Quickstart',
     faq: 'FAQ',
     github: 'GitHub',
@@ -213,8 +255,48 @@ const en = {
     videoCaption:
       'Recorded for real, nothing staged: red tests → the model reads, patches, re-runs → all green (26s)',
   },
+  highlights: {
+    title: 'Why golder',
+    sub: 'One command to install; the differences are these six.',
+    items: [
+      {
+        icon: 'globe',
+        title: 'Hot-switch providers; the session outlives them',
+        body:
+          '/provider switches gateways at any time and /resume continues the same context on the new provider; 19 built-in conversation gateways cover OpenAI Chat / Responses, Anthropic Messages and Gemini, plus any compatible endpoint.',
+      },
+      {
+        icon: 'shield',
+        title: 'Lightweight like pi, with a real security boundary',
+        body:
+          'The same single-binary class, plus a per-call approval gate and an OS sandbox (sandbox-exec / bubblewrap): reads stay in the workspace, writes in the project and temp dirs, the network is off by default, and credentials are unreadable.',
+      },
+      {
+        icon: 'terminal',
+        title: 'Easier to customize than codex-cli',
+        body:
+          'Pure Go: one language, one binary, no Node/Python runtime. A new tool, provider or approval rule is one go build away.',
+      },
+      {
+        icon: 'gauge',
+        title: '~50–100 MB resident',
+        body: 'Top tier for this class of agent, so it can stay open all day.',
+      },
+      {
+        icon: 'box',
+        title: 'Planned: tuios + kitty-browse',
+        body:
+          'Free-form agent control of windows and the browser; when you debug frontend and backend together, the model sees the terminal, editor and browser at once — the fullest context.',
+      },
+      {
+        icon: 'branch',
+        title: 'Planned: MCP and a plugin ecosystem',
+        body: 'Bring external tools and data sources in without changing the core.',
+      },
+    ] as Feature[],
+  },
   features: {
-    title: 'Not another wrapper',
+    title: 'More features',
     sub: 'Safety boundaries, long tasks, and session management are built in — the parts you actually use every day.',
     items: [
       {
