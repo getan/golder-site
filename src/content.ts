@@ -51,13 +51,13 @@ const zh = {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
     title: '终端里的 AI 编码助手',
     lead:
-      'golder 用 Go 写成一个单二进制：读写文件、执行命令、检索代码、抓取网页，把「理解需求 → 改好代码」跑成闭环。默认进入全屏 TUI，也能无头跑进脚本和 CI。',
+      'golder 用 Go 写成一个单二进制：读写文件、执行命令、检索代码、抓取网页，把「理解需求 → 改好代码」跑成闭环；自带分屏终端工作区，agent、shell 和浏览器在同一个面板里。默认进入全屏 TUI，也能无头跑进脚本和 CI。',
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     installHint: 'macOS: brew install getan/tap/golder · Linux: 一键脚本 · Windows 从 Releases 下载 zip · 不需要任何运行时',
     videoTitle: 'golder — 真实会话（空闲段已掐掉）',
     videoCaption:
-      '真实录制，无剪辑造假：go test 红 → 模型自己读码、打补丁、复跑 → 全绿收尾（26 秒）',
+      '真实录制：左边 agent 自己读码、打补丁，右边 shell 里 go test 从红到绿；中间的等待已剪掉（37 秒）',
   },
   highlights: {
     title: '为什么是 golder',
@@ -88,9 +88,9 @@ const zh = {
       },
       {
         icon: 'box',
-        title: '规划中：tuios + kitty-browse',
+        title: '终端 / 浏览器 / 工作区在一个面板里',
         body:
-          '窗口与浏览器的自由 agent 操作；前后端同时 debug 时，模型能同时看到终端、编辑器、浏览器，上下文最充分。',
+          'golder workspace 自带分屏终端：一个 pane 里 agent 改代码，另一个 pane 里跑测试，焦点即输入；browser 通过 kitty-browse 的控制 socket 操作页面（snapshot/click/fill/wait/console/network），预设（debug-fullstack、data-analysis、review）一次起好后端、前端和浏览器，再用 snapshot 把所有 pane 的上下文一次交给模型。',
       },
       {
         icon: 'branch',
@@ -247,13 +247,13 @@ const en = {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
     title: 'The AI coding agent in your terminal',
     lead:
-      'golder is a single Go binary: read and write files, run commands, search code, fetch the web — closing the loop from “understand the task” to “the change is in”. Full-screen TUI by default, headless for scripts and CI.',
+      'golder is a single Go binary: read and write files, run commands, search code, fetch the web — closing the loop from “understand the task” to “the change is in”. It ships a split-pane terminal workspace where the agent, a shell and the browser share one panel. Full-screen TUI by default, headless for scripts and CI.',
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     installHint: 'macOS: brew install getan/tap/golder · Linux: one-line script · Windows: zip from Releases · no runtime required',
     videoTitle: 'golder — a real session (idle time trimmed)',
     videoCaption:
-      'Recorded for real, nothing staged: red tests → the model reads, patches, re-runs → all green (26s)',
+      'Recorded for real: the agent reads and patches on the left while go test goes red to green in a shell pane on the right; the waits are trimmed (37s)',
   },
   highlights: {
     title: 'Why golder',
@@ -284,9 +284,9 @@ const en = {
       },
       {
         icon: 'box',
-        title: 'Planned: tuios + kitty-browse',
+        title: 'Terminal, browser and workspace in one panel',
         body:
-          'Free-form agent control of windows and the browser; when you debug frontend and backend together, the model sees the terminal, editor and browser at once — the fullest context.',
+          'golder workspace ships a split-pane terminal: the agent edits in one pane while tests run in another, and focus is input. The browser drives pages over kitty-browse’s control socket (snapshot/click/fill/wait/console/network); presets (debug-fullstack, data-analysis, review) start backend, frontend and browser together, and snapshot hands the model every pane’s context at once.',
       },
       {
         icon: 'branch',

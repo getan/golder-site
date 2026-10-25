@@ -41,8 +41,13 @@ NAMED = {
 # 否则 PIL 会画成豆腐块。
 POWERLINE = {"\ue0b0": "right", "\ue0b2": "left"}
 # 演示环境里模型可能跑 `ls -la`，输出带上录制机的用户名；公开素材换成占位名。
-# 这是唯一一处改写画面内容的处理，其余一律照实渲染。
-REDACT = {"quant": "dev"}
+# 这是唯一一处改写画面内容的处理，其余一律照实渲染。录制机自己的名字不写进仓库：
+# 用 DEMO_REDACT="<用户名>=dev" 传入（逗号分隔可写多条）。
+REDACT = dict(
+    part.split("=", 1)
+    for part in os.environ.get("DEMO_REDACT", "").split(",")
+    if "=" in part
+)
 
 
 def color(v, default):
@@ -202,6 +207,12 @@ def main():
     v.add_argument("--fps", type=int, default=30)
     v.add_argument("--cap-idle", type=float, default=1.2, help="单帧最长停留秒数")
     v.add_argument("--speed", type=float, default=1.0, help="整体倍速（<1 更快）")
+    v.add_argument("--from", dest="start", type=float, default=0.0,
+                   help="从时间线的第几秒开始出片（默认 0）")
+    v.add_argument("--to", dest="end", type=float, default=None,
+                   help="到第几秒结束（默认到结尾）")
+    v.add_argument("--cuts", default=None,
+                   help="多段剪辑窗口，如 6-40,55-70,96-116（给了就忽略 --from/--to）")
     v.add_argument("--tmpdir", default="/tmp/shot/frames")
     v.add_argument("--keep-frames", action="store_true")
 
@@ -234,19 +245,45 @@ def main():
                 f"|{screen.buffer[y][x].bold}|{screen.buffer[y][x].reverse}"
                 for y in range(rows) for x in range(cols)).encode()).hexdigest()
 
-        shots, last_sig, last_t = [], None, 0.0
+        # 先把整条时间线喂完，只把落在窗口内的画面留成帧：窗口起点的那一屏
+        # 依赖起点之前的输出，跳过它们会从空白屏开始。
+        start = max(0.0, args.start)
+        end = args.end if args.end is not None else float("inf")
+        cuts = None
+        if args.cuts:
+            cuts = []
+            for part in args.cuts.split(","):
+                a, b = part.split("-", 1)
+                cuts.append((float(a), float(b)))
+
+        def window_of(t):
+            if cuts is None:
+                return 0 if start <= t <= end else -1
+            for idx, (a, b) in enumerate(cuts):
+                if a <= t <= b:
+                    return idx
+            return -1
+
+        shots, last_sig, last_t, last_win = [], None, start, -1
         for t, blob in timeline:
             stream.feed(dec.decode(blob))
+            win = window_of(t)
+            if win < 0:
+                continue
             sig = signature()
             if sig == last_sig:
                 continue
             path = os.path.join(args.tmpdir, f"f{len(shots):05d}.png")
             render(screen, path)
             if shots:
-                # 停留时长 = 这一帧在屏幕上挂了多久（空闲段按 cap_idle 截断再整体提速）
-                shots[-1][1] = min(t - last_t, args.cap_idle) * args.speed
+                # 停留时长 = 这一帧在屏幕上挂了多久（空闲段按 cap_idle 截断再整体
+                # 提速）。跨剪辑窗口时只留一个短拍，不把被剪掉的等待算进来。
+                if win == last_win:
+                    shots[-1][1] = min(t - last_t, args.cap_idle) * args.speed
+                else:
+                    shots[-1][1] = 0.35 * args.speed
             shots.append([path, None])
-            last_sig, last_t = sig, t
+            last_sig, last_t, last_win = sig, t, win
         if not shots:
             sys.exit("时间线里没有画面变化")
         shots[-1][1] = 1.5                      # 收尾停一下，让人看清结论

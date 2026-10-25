@@ -1,96 +1,110 @@
 # scripts
 
-首屏素材是**真实会话**（不是合成的示意画面）：`go test` 红 → 启动 golder →
-中文任务「修复失败用例」→ 模型自主修复 → 全绿。两条产线并存：
+首屏视频和 README 截图都是**真实会话**：在真实 PTY 里跑 golder，用 pyte 仿真终端、
+PIL 逐格绘制成 PNG；同一份时间线也能直接出视频。不是合成画面，也没有后期摆拍。
 
-| 产线 | 产物 | 状态 |
+| 产物 | 命令 | 写到哪里 |
 |---|---|---|
-| `record-demo.sh`（VHS 录像） | `public/demo/demo.{mp4,webm}`、`poster.jpg` | 脚本可用，但**本机录制环境已坏**（见下） |
-| `snapshot.py`（截图） | `../../golder/docs/assets/demo-*.png` | 当前 README / 首屏在用 |
+| 站点首屏视频 | `snapshot.py video` + ffmpeg | `public/demo/demo.{mp4,webm}`、`poster.jpg` |
+| README 截图 / GIF | `snapshot.py render`（GIF 再由视频转） | `../../golder/docs/assets/demo-*` |
+| 会话时间线（上面两者的输入） | `snapshot.py capture`（普通 TUI）或 `workspace-drive.py`（workspace 分屏） | `/tmp/golder-demo/shots/*.pkl` |
 
-## 为什么现在用截图
+VHS 那套（`record-demo.sh` / `demo.tape` / `demo-drive.py`）已退役：录制机上 ttyd +
+无头浏览器渲染出的是空白帧，注入非 ASCII 还会卡死。文件保留只为历史参考。
 
-VHS（`brew install vhs`：起 ttyd + 无头浏览器渲染真终端，逐帧交 ffmpeg）在录制机上
-有两处硬伤，都不是脚本的问题，改动脚本绕不过去：
-
-1. **注入非 ASCII 会卡死**。`Type "中文…"` 或 `Copy`+`Paste` 中文一律挂住，vhs 停在
-   那一行不动、也不报错。最小复现：
-   ```sh
-   printf 'Output "/tmp/cjk/out.mp4"\nSet Width 600\nSet Height 200\nSet Theme "GitHub Dark"\nType "echo 中文"\nEnter\nSleep 1s\n' > /tmp/cjk.tape
-   timeout 60 vhs /tmp/cjk.tape    # 60s 不退出，日志停在 Type 那一行
-   ```
-   （中文**输出**正常，只有注入有问题。）即便绕开——`demo.tape` 现在用
-   `demo-drive.py` 把中文直接写进 golder 的 PTY——第 2 条仍然拦路。
-2. **渲染出的是空白帧**。连 `Type "echo HELLO"` 这种纯 ASCII 的最简 tape，成片也是
-   全黑（帧大小 ~1.3KB，正常有字 >15KB）。换 `ROD_BROWSER_BIN` 指向 Brave 同样空白，
-   本机 Chromium 是 150 dev 构建、没装 Google Chrome。旧片能正常播放，所以是录制机上
-   的渲染环境坏了，不是 tape 写错。
-
-所以 `snapshot.py` 接手：不经过浏览器，在真实 PTY 里跑**同样**的会话，用 pyte 仿真
-终端、PIL 逐格绘制。代价是没有动效；好处是逐帧可控、可复现、跑一次能出多张图。
-
-## snapshot.py —— 出首屏截图
+## 0) 准备（每次都从干净环境开始）
 
 ```bash
-pip install pyte pillow                # 一次性；浏览器与字体不再需要
-# 1) 跑一次真实会话，把终端输出存成时间线（约 3 分钟）
-python3 scripts/snapshot.py capture --cols 140 --rows 40 --inject 7 --total 175 \
-    --prompt "修复失败的测试用例，让 go test 全部通过" \
-    --shell "cd /tmp/demo/slugkit && go test ./... ; exec golder" \
-    --out /tmp/shot/timeline.pkl
-# 2) 同一份时间线渲染多个时刻（改文案/换时刻不用重跑会话）
-python3 scripts/snapshot.py render --timeline /tmp/shot/timeline.pkl \
-    --shots "8=welcome.png,30=tools.png,171=done.png"
+D=/tmp/golder-demo
+mkdir -p $D/{bin,home,shots,out,userhome}
+python3 -m venv $D/venv && $D/venv/bin/pip install pyte pillow
+
+# 演示二进制：版本号写成当前 release，splash 才不会出现「有新版本」提示
+(cd ../golder && GOWORK=off go build \
+  -ldflags "-X main.version=v1.5.5 -X main.commit=$(git rev-parse --short HEAD)" \
+  -o $D/bin/golder ./cmd/golder)
+
+# 演示项目（故意带 3 个失败用例）+ 预置信任，免得录到询问弹窗
+rm -rf $D/slugkit && cp -R scripts/fixture/slugkit $D/slugkit
+# macOS 上 /tmp 是 /private/tmp 的符号链接：两种拼法都写上
+printf '{"/private/tmp/golder-demo/slugkit": true, "/tmp/golder-demo/slugkit": true}' \
+  > $D/home/trust.json
+(cd $D/slugkit && go test ./...)   # 必须先看到红：agent 改过的目录不能复用
 ```
 
-前置环境与 `record-demo.sh` 相同：`/tmp/demo-bin/golder` 是要展示的二进制，
-`/tmp/demo/slugkit` 是带 bug 的演示项目，`/tmp/demo-home` 是隔离的 `GOLDER_HOME`
-（三者由 `record-demo.sh` 准备；单跑截图时按同样布局摆好即可）。
-
-渲染过程中的两处**有意为之**，别当成 bug：
-
-- **脱敏**：演示里模型常跑 `ls -la`，输出带文件属主（录制机用户名）。渲染时把用户名
-  换成 `dev`，这是唯一一处改写画面内容的处理，其余一律照实渲染。
-- **状态栏三角**：golder 状态栏用 powerline 字形（`\ue0b0`/`\ue0b2`）分段，Menlo 没
-  这些字形，直接画会是豆腐块，所以手工画三角。
-
-## record-demo.sh —— 修好后再用
-
-脚本侧的真问题都已修掉（环境修好后可直接重跑）：
-
-- `$GOLDER_REPO）` 这类**全角括号紧跟变量**会被 `set -u` 读成变量名的一部分而报错，
-  已改成 `${GOLDER_REPO}）`；
-- `trust.json` 的键要**同时写物理路径**（macOS 上 `/tmp` 是 `/private/tmp` 的符号链接，
-  golder 启动时解析出后者）。只写 `/tmp/...` 的话演示会卡在信任弹窗上，
-  末尾的 `/exit` 送不进去、vhs 于是永远等不到退出；
-- 录制机上若自己就跑在 tuios / herdr 的窗格里，`TUIOS_*` / `HERDR_*` 会被演示进程继承，
-  新版的 golder 会照它上报状态（实测被 tuios 的 nested 守卫挡下，但仍是噪音），
-  脚本现在会先把这些变量摘掉。
+## 1) 录 workspace 时间线
 
 ```bash
-scripts/record-demo.sh ../golder    # 默认裁到 55s 原始时长，2x 快放
-scripts/record-demo.sh ../golder 70 # 若这次 agent 花得更久，把窗口放大
+DEMO_BIN=$D/bin/golder DEMO_CWD=$D/slugkit DEMO_HOME=$D/userhome \
+DEMO_GOLDER_HOME=$D/home DEMO_OUT=$D/shots/ws.pkl DEMO_TOTAL=130 SHELL=/bin/sh \
+DEMO_ARGV='["workspace","-s","demo","-C","/tmp/golder-demo/slugkit"]' \
+DEMO_STEPS='[
+  {"t":9,"send":"\u0002c"},
+  {"t":12,"type":"go test ./..."},
+  {"t":19,"send":"\u0002\u001b[D"},
+  {"t":21,"type":"修复失败的测试，让 go test 全部通过；先列计划，改完自己验证"},
+  {"t":100,"send":"\u0002\u001b[C"},
+  {"t":103,"type":"go test ./..."}]' \
+PATH="$D/bin:$PATH" $D/venv/bin/python3 scripts/workspace-drive.py
+
+# 录完停掉 daemon，下一次 attach 不会接上旧 pane
+GOLDER_HOME=$D/home HOME=$D/userhome $D/bin/golder workspace stop demo
 ```
 
-产物写入 `public/demo/`：`demo.mp4`（H.264）、`demo.webm`（VP9，体积更小，优先）、
-`poster.jpg`（静态封面）。
+按键写法：`\u0002` 是 ctrl+b 前缀，`\u001b[D` / `\u001b[C` 是左右方向键。最后那次
+`go test` 要等 agent 改完，所以按实测时长调 `t`（这条主线约 100 秒）。
 
-### 隐私红线（出片后务必确认）
+## 2) 出片
 
-- 脚本只在 `/tmp/demo*` 临时目录操作，`GOLDER_HOME` 指向临时目录，**不读不写真实 `~/.golder`**
-- 出片后**人工过一遍**：抽查关键帧 + `strings` 扫描 `sk-`、用户名、真实家目录路径
-- 画面里不应出现：API Key、代理地址、历史会话、个人目录结构
+```bash
+# 站点视频：三段拼接，中间的等待直接剪掉；speed 0.4 ≈ 2.5 倍速
+$D/venv/bin/python3 scripts/snapshot.py video --timeline $D/shots/ws.pkl \
+  --out $D/out/demo.mp4 --cuts 6-38,44-72,96-118 --speed 0.4 --cap-idle 1.0
+ffmpeg -y -i $D/out/demo.mp4 -c:v libvpx-vp9 -crf 34 -b:v 0 -row-mt 1 -cpu-used 3 \
+  -an public/demo/demo.webm
+cp $D/out/demo.mp4 public/demo/demo.mp4
 
-### 文件说明
+# 截图 / 海报：同一份时间线，任意时刻都能重画
+$D/venv/bin/python3 scripts/snapshot.py render --timeline $D/shots/ws.pkl \
+  --shots "50=$D/out/tools.png,120=$D/out/done.png"
+ffmpeg -y -i $D/out/tools.png -q:v 3 public/demo/poster.jpg
+
+# README 的 GIF：12 秒、900px、64 色（再大 GitHub 打开会慢）
+$D/venv/bin/python3 scripts/snapshot.py video --timeline $D/shots/ws.pkl \
+  --out $D/out/gif.mp4 --cuts 6-16,46-60,102-114 --speed 0.4 --cap-idle 1.0
+ffmpeg -y -i $D/out/gif.mp4 -t 12 \
+  -vf "fps=10,scale=900:-1:flags=lanczos,palettegen=max_colors=64:stats_mode=diff" \
+  $D/out/palette.png
+ffmpeg -y -i $D/out/gif.mp4 -i $D/out/palette.png \
+  -lavfi "trim=0:12,fps=10,scale=900:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=none" \
+  ../../golder/docs/assets/demo.gif
+```
+
+## 隐私红线（出片后必查）
+
+- 只在 `/tmp/golder-demo` 里操作；`GOLDER_HOME` 和 `HOME` 都指向临时目录，
+  **不读不写真实 `~/.golder`**
+- 每次录制前重置 fixture：agent 改过的项目不能复用，否则「红测试」其实是绿的
+- 画面里的绝对路径只应有 `/private/tmp/golder-demo/slugkit`；别用带用户名或随机
+  UUID 的目录（splash 会把工作目录原样打出来）
+- `ls -la` 会带出录制机用户名：用 `DEMO_REDACT="<用户名>=dev"` 让渲染时替换掉
+  （默认不替换任何内容，这是唯一一处改写画面内容的处理）
+- 出片后扫一遍时间线文本（比扫视频文件可靠）：
+
+```bash
+$D/venv/bin/python3 -c "
+import pickle, re
+cols, rows, tl = pickle.load(open('$D/shots/ws.pkl', 'rb'))
+text = re.sub(r'\x1b\[[0-9;?]*[A-Za-z]', '', b''.join(b for _, b in tl).decode('utf-8', 'replace'))
+open('/tmp/golder-demo/scan.txt', 'w').write(text)"
+grep -n -i -E 'api[_-]?key|sk-[a-z0-9]{10,}|token=|bearer|/users/' /tmp/golder-demo/scan.txt
+```
+
+## 文件说明
 
 | 文件 | 用途 |
 |---|---|
-| `snapshot.py` | 截图产线：PTY 跑真实会话 → pyte 仿真 → 渲染 PNG |
-| `demo-drive.py` | 录像产线：把中文任务写进 golder 的 PTY（`demo.tape` 只打 ASCII） |
-| `demo.tape` | VHS 录制脚本（终端操作序列），由 record-demo.sh 调用 |
+| `snapshot.py` | 截图 / 视频产线：PTY 时间线 → pyte 仿真 → PNG；`video` 直接合成 mp4 |
+| `workspace-drive.py` | workspace 录制：按时间点把按键 / 中文任务写进 PTY |
 | `fixture/slugkit/` | 演示项目（故意带 3 个失败用例的 Go 小模块） |
-| `record-demo.sh` | 一键重录：构建二进制 → 隔离环境 → 录制 → 裁剪/转码 |
-
-`fixture/slugkit` 的 bug 是精心选的：它能同时展示读文件、跑测试、打补丁、验证
-四类工具调用，且修复逻辑（单遍扫描 + 折叠分隔符）有足够"含金量"，看起来像真活
-而不是玩具题。
+| `record-demo.sh`、`demo.tape`、`demo-drive.py` | 已退役的 VHS 产线，保留作历史参考 |

@@ -1,6 +1,7 @@
 ---
-// 首屏演示视频：真实录制（用 VHS 跑的 golder 会话），不是合成的示意画面。
-// 资产在 public/demo/ 下，由 scripts/record-demo.sh 一键重录。
+// 首屏演示视频：真实录制的 golder workspace 会话（真 PTY + pyte 逐帧渲染），
+// 不是合成的示意画面。资产在 public/demo/ 下，由 scripts/ 的 snapshot.py
+// 产线重录（见 scripts/README.md）。
 interface Props {
   title: string;
   caption: string;
