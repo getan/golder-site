@@ -51,7 +51,7 @@ const zh = {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
     title: '终端里的 AI 编码助手',
     lead:
-      'golder 用 Go 写成一个单二进制：读写文件、执行命令、检索代码、抓取网页，把「理解需求 → 改好代码」跑成闭环；自带分屏终端工作区，agent、shell 和浏览器在同一个面板里。默认进入全屏 TUI，也能无头跑进脚本和 CI。',
+      'golder 用 Go 写成一个单二进制。普通用户默认用 golder workspace：自带分屏终端，agent、shell 和浏览器在同一个面板里，把「理解需求 → 改好代码」跑成闭环；已经有习惯的终端复用器时，直接在它的 pane 里跑单 agent 的 golder。也能无头跑进脚本和 CI。',
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     installHint: 'macOS: brew install getan/tap/golder · Linux: 一键脚本 · Windows 从 Releases 下载 zip · 不需要任何运行时',
@@ -63,6 +63,12 @@ const zh = {
     title: '为什么是 golder',
     sub: '装好就能用；真正的差别在这六件事。',
     items: [
+      {
+        icon: 'box',
+        title: '默认用法：自带终端工作区',
+        body:
+          'golder workspace 一个面板里跑 agent、shell 和浏览器：左边 agent 改代码，右边 shell 跑测试，焦点即输入；browser 通过 kitty-browse 的控制 socket 操作页面（snapshot/click/fill/wait/console/network），预设（debug-fullstack、data-analysis、review）一次起好后端、前端和浏览器，再用 snapshot 把所有 pane 的上下文一次交给模型。',
+      },
       {
         icon: 'globe',
         title: '多 Provider 热切换，会话不绑定厂商',
@@ -85,12 +91,6 @@ const zh = {
         icon: 'gauge',
         title: '常驻内存约 50–100 MB',
         body: '同类里的第一梯队，长时间挂着跑也不占机器。',
-      },
-      {
-        icon: 'box',
-        title: '终端 / 浏览器 / 工作区在一个面板里',
-        body:
-          'golder workspace 自带分屏终端：一个 pane 里 agent 改代码，另一个 pane 里跑测试，焦点即输入；browser 通过 kitty-browse 的控制 socket 操作页面（snapshot/click/fill/wait/console/network），预设（debug-fullstack、data-analysis、review）一次起好后端、前端和浏览器，再用 snapshot 把所有 pane 的上下文一次交给模型。',
       },
       {
         icon: 'branch',
@@ -171,12 +171,12 @@ const zh = {
       {
         title: '配置凭证',
         body: '默认网关 OpenCode 只需一个 API Key；也可指向任意 OpenAI 兼容端点，或用本地 Ollama。',
-        codes: ['export OPENCODE_API_KEY=...', 'golder   # 直接开聊'],
+        codes: ['export OPENCODE_API_KEY=...'],
       },
       {
-        title: '开始用',
-        body: '默认进入全屏 TUI；加 -p 是无头模式，适合脚本与 CI。',
-        codes: ['golder', 'golder -p "读取 README 并总结这个仓库"'],
+        title: '打开工作区',
+        body: 'golder workspace 打开自带的分屏终端：第一格是 agent，Ctrl+b c 开 shell，浏览器按需。Ctrl+b d 只断开客户端，daemon 和 pane 继续跑。已经习惯 tuios / herdr / tmux / zellij / screen 的话，直接在它的 pane 里跑 golder 单 agent 模式。',
+        codes: ['golder workspace', 'golder   # 已有复用器时：单个 agent'],
       },
     ] as Step[],
   },
@@ -247,7 +247,7 @@ const en = {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
     title: 'The AI coding agent in your terminal',
     lead:
-      'golder is a single Go binary: read and write files, run commands, search code, fetch the web — closing the loop from “understand the task” to “the change is in”. It ships a split-pane terminal workspace where the agent, a shell and the browser share one panel. Full-screen TUI by default, headless for scripts and CI.',
+      'golder is a single Go binary. For most people the entry point is golder workspace: a built-in split-pane terminal with the agent, a shell and the browser in one panel, closing the loop from “understand the task” to “the change is in”. If you already live in a terminal multiplexer, run the single-agent golder in its pane instead. Headless mode covers scripts and CI.',
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     installHint: 'macOS: brew install getan/tap/golder · Linux: one-line script · Windows: zip from Releases · no runtime required',
@@ -259,6 +259,12 @@ const en = {
     title: 'Why golder',
     sub: 'One command to install; the differences are these six.',
     items: [
+      {
+        icon: 'box',
+        title: 'The default: a built-in terminal workspace',
+        body:
+          'golder workspace runs the agent, a shell and the browser in one panel: the agent patches on the left while the shell runs tests on the right, and focus is input. The browser drives pages over kitty-browse’s control socket (snapshot/click/fill/wait/console/network); presets (debug-fullstack, data-analysis, review) start backend, frontend and browser together, and snapshot hands the model every pane’s context at once.',
+      },
       {
         icon: 'globe',
         title: 'Hot-switch providers; the session outlives them',
@@ -281,12 +287,6 @@ const en = {
         icon: 'gauge',
         title: '~50–100 MB resident',
         body: 'Top tier for this class of agent, so it can stay open all day.',
-      },
-      {
-        icon: 'box',
-        title: 'Terminal, browser and workspace in one panel',
-        body:
-          'golder workspace ships a split-pane terminal: the agent edits in one pane while tests run in another, and focus is input. The browser drives pages over kitty-browse’s control socket (snapshot/click/fill/wait/console/network); presets (debug-fullstack, data-analysis, review) start backend, frontend and browser together, and snapshot hands the model every pane’s context at once.',
       },
       {
         icon: 'branch',
@@ -367,12 +367,12 @@ const en = {
       {
         title: 'Configure a credential',
         body: 'The default gateway (OpenCode) needs a single API key; any OpenAI-compatible endpoint or a local Ollama works too.',
-        codes: ['export OPENCODE_API_KEY=...', 'golder   # start chatting'],
+        codes: ['export OPENCODE_API_KEY=...'],
       },
       {
-        title: 'Run it',
-        body: 'No flags: full-screen TUI. Add -p for headless mode — good for scripts and CI.',
-        codes: ['golder', 'golder -p "read the README and summarize this repo"'],
+        title: 'Open a workspace',
+        body: 'golder workspace opens the built-in split-pane terminal: the agent in the first pane, Ctrl+b c for a shell, and the browser when you need it. Ctrl+b d detaches; the daemon and its panes keep running. Already used to tuios / herdr / tmux / zellij / screen? Run the single-agent golder in its pane instead.',
+        codes: ['golder workspace', 'golder   # already in a multiplexer: single agent'],
       },
     ] as Step[],
   },
