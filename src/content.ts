@@ -67,7 +67,7 @@ const zh = {
         icon: 'box',
         title: '默认用法：自带终端工作区',
         body:
-          'golder workspace 一个面板里跑 agent、shell 和浏览器：左边 agent 改代码，右边 shell 跑测试，焦点即输入；browser 通过 kitty-browse 的控制 socket 操作页面（snapshot/click/fill/wait/console/network），预设（debug-fullstack、data-analysis、review）一次起好后端、前端和浏览器，再用 snapshot 把所有 pane 的上下文一次交给模型。',
+          'golder workspace 一个面板里跑 agent、shell 和浏览器（macOS / Linux 不必另装 tuios 或 kitty-browse）：左边 agent 改代码，右边 shell 跑测试，焦点即输入；浏览器由 agent 自己通过 browser 工具的 open 动作起在同一工作区（profile 与 socket 都在 .golder/browser/），再通过 snapshot/click/fill/wait/console/network 操作页面；预设（debug-fullstack、data-analysis、review）一次起好后端、前端和浏览器，snapshot 把所有 pane 的上下文一次交给模型。',
       },
       {
         icon: 'globe',
@@ -94,8 +94,9 @@ const zh = {
       },
       {
         icon: 'branch',
-        title: '规划中：MCP 与插件生态',
-        body: '把外部工具和数据源接进来，扩展不必改核心。',
+        title: '扩展不必改核心：CLI / MCP / Skills',
+        body:
+          '/extensions 一处管理声明式 CLI 工具、标准 MCP 服务（stdio/http，tools/prompts/resources）、旧 RPC 插件和 Skills；来源要显式信任，首次连接先看清执行程序、manifest/URL 与网络上限。外部工具的每次调用仍走同一审批门，扩展不必改核心。',
       },
     ] as Feature[],
   },
@@ -131,13 +132,19 @@ const zh = {
         icon: 'gauge',
         title: '长任务不掉线',
         body:
-          '/compact 压缩、上下文预算工具、/goal 自主目标循环、子 Agent 派发、持久记忆与 /dream 整理——跑几小时的大活有配套的兜底；连接中途断掉时从断点续写，不丢整轮。',
+          '/compact 压缩、上下文预算工具、/goal 自主目标循环、持久记忆与 /dream 整理——跑几小时的大活有配套的兜底；子 Agent 只在你明确要求时派发，fresh 独立上下文或 fork 继承父对话，连接中途断掉时从断点续写，不丢整轮。',
       },
       {
         icon: 'branch',
         title: '会话是资产',
         body:
           '/resume 历史会话、/fork 从任意消息分叉、/tree 浏览分支树、/rewind 把文件与对话一起回滚、/export 往返存档。会话不绑厂商：换网关后用 /resume 在当前 provider 上继续同一份上下文。',
+      },
+      {
+        icon: 'box',
+        title: '工作区会话按名字管理',
+        body:
+          'golder workspace 打开全局 default，-s coding 从任何目录进入另一套；new / attach / list / status / stop / rm 都按名字。每个名字一个独立 daemon，带着自己的配置、状态和日志；连接、查询、停止不要求原项目目录还在，旧的项目级会话仍可用 legacy 选择器连接。',
       },
       {
         icon: 'shield',
@@ -149,13 +156,13 @@ const zh = {
         icon: 'terminal',
         title: '跑在 tuios / herdr 里就是一个 agent',
         body:
-          '在 tuios 窗口或 herdr pane 里启动，golder 自己上报状态：rail 上出现工作 / 等你 / 完成，审批与提问进 Inbox，daemon 重启后带着 golder --resume 回到原会话。两个宿主都不用改，tuios 只需装一份 harness manifest。',
+          '在 tuios 窗口或 herdr pane 里启动，golder 自己上报状态：rail 上出现工作 / 等你 / 完成，审批与提问进 Inbox，daemon 重启后带着 golder --resume 回到原会话。两个宿主都不用改；tuios 用 golder host-compat install 写一份 harness manifest，herdr 不需要。',
       },
       {
         icon: 'globe',
-        title: '网络现实友好',
+        title: '网络按次授权，代理按 provider',
         body:
-          '20 个内置网关，覆盖 OpenAI Chat / OpenAI Responses / Anthropic Messages / Gemini 四种线上协议，也可指向任意 OpenAI 兼容端点；网络默认关闭，auto 档下随评审通过的调用一起授权（/network follow 默认开，off 恢复逐次询问），也可对某个 host / 命令预授权。/proxy 按 provider 单独走代理，未选中的直连、不继承 shell 的 HTTP_PROXY。',
+          '20 个内置网关，覆盖 OpenAI Chat / OpenAI Responses / Anthropic Messages / Gemini 四种线上协议，也可指向任意 OpenAI 兼容端点；网络默认关闭且按次授权——需要联网的调用在参数里声明，auto 下随评审通过的调用一起放行，ask 下与外部路径、沙箱外运行合并进同一个弹窗；没有持久化网络白名单，也没有单独的 /network 命令。/proxy 按 provider 单独走代理，未选中的直连、不继承 shell 的 HTTP_PROXY。',
       },
     ] as Feature[],
   },
@@ -175,8 +182,12 @@ const zh = {
       },
       {
         title: '打开工作区',
-        body: 'golder workspace 打开自带的分屏终端：第一格是 agent，Ctrl+b c 开 shell，浏览器按需。Ctrl+b d 只断开客户端，daemon 和 pane 继续跑。已经习惯 tuios / herdr / tmux / zellij / screen 的话，直接在它的 pane 里跑 golder 单 agent 模式。',
-        codes: ['golder workspace', 'golder   # 已有复用器时：单个 agent'],
+        body: 'golder workspace 打开全局 default：第一格是 agent，Ctrl+b c 开 shell，浏览器由 agent 按需自己打开。Ctrl+b d 只断开客户端，daemon 和 pane 继续跑；golder workspace -s coding 从任何目录进入另一套命名会话，list / attach / stop 都按名字。已经习惯 tuios / herdr / tmux / zellij / screen 的话，直接在它的 pane 里跑 golder 单 agent 模式。',
+        codes: [
+          'golder workspace',
+          'golder workspace -s coding   # 另一套命名会话',
+          'golder   # 已有复用器时：单个 agent',
+        ],
       },
     ] as Step[],
   },
@@ -198,7 +209,7 @@ const zh = {
       },
       {
         q: '安全吗？它会乱改我的文件吗？',
-        a: '三道门：静态硬拒（sudo、rm -rf /、写 ~/.ssh 与凭据路径直接拒绝，凭据永远不可授权）→ 逐调用审查（auto 档每次改动型调用都过决策模型，拿不准升级给会话模型：低风险放行、需隔离的进沙箱、高危拒绝，各给一行理由）→ OS 沙箱（读白名单、写限项目与临时目录；网络默认关闭，随评审通过的调用一起授权，可用 /network follow off 改为逐次询问）。想先观察可以切到 read-only。',
+        a: '三道门：静态硬拒（sudo、rm -rf /、写 ~/.ssh 与凭据路径直接拒绝，凭据永远不可授权）→ 逐调用审查（auto 档每次改动型调用都过决策模型，拿不准升级给会话模型：低风险放行、需隔离的进沙箱、高危拒绝，各给一行理由）→ OS 沙箱（读白名单、写限项目与临时目录；网络默认关闭且按次授权，随同一次能力评审放行——没有持久化网络白名单，也没有 /network 命令）。想先观察可以切到 read-only。',
       },
       {
         q: '国内网络能用吗？',
@@ -263,7 +274,7 @@ const en = {
         icon: 'box',
         title: 'The default: a built-in terminal workspace',
         body:
-          'golder workspace runs the agent, a shell and the browser in one panel: the agent patches on the left while the shell runs tests on the right, and focus is input. The browser drives pages over kitty-browse’s control socket (snapshot/click/fill/wait/console/network); presets (debug-fullstack, data-analysis, review) start backend, frontend and browser together, and snapshot hands the model every pane’s context at once.',
+          'golder workspace runs the agent, a shell and the browser in one panel (no separate tuios or kitty-browse install on macOS / Linux): the agent patches on the left while the shell runs tests on the right, and focus is input. The agent opens the browser itself through the browser tool’s open action (profile and socket under .golder/browser/), then drives pages with snapshot/click/fill/wait/console/network; presets (debug-fullstack, data-analysis, review) start backend, frontend and browser together, and snapshot hands the model every pane’s context at once.',
       },
       {
         icon: 'globe',
@@ -290,8 +301,9 @@ const en = {
       },
       {
         icon: 'branch',
-        title: 'Planned: MCP and a plugin ecosystem',
-        body: 'Bring external tools and data sources in without changing the core.',
+        title: 'Extend without touching the core: CLI / MCP / Skills',
+        body:
+          '/extensions manages declarative CLI tools, standard MCP services (stdio/http with tools/prompts/resources), legacy RPC plugins and Skills in one place. A source must be explicitly trusted, and the first connection shows its executable, manifest/URL and network ceiling. Every external tool call still goes through the same approval gate, so extensions never require changing the core.',
       },
     ] as Feature[],
   },
@@ -327,13 +339,19 @@ const en = {
         icon: 'gauge',
         title: 'Built for long tasks',
         body:
-          '/compact summarization, context-budget tools, autonomous /goal loops, sub-agent dispatch, persistent memory and /dream consolidation; a stream cut mid-answer continues from where it stopped instead of losing the turn.',
+          '/compact summarization, context-budget tools, autonomous /goal loops, persistent memory and /dream consolidation. Sub-agents are dispatched only when you explicitly ask for them — fresh for an independent context or fork to inherit the conversation — and a stream cut mid-answer continues from where it stopped instead of losing the turn.',
       },
       {
         icon: 'branch',
         title: 'Sessions are assets',
         body:
           '/resume past sessions, /fork from any message, /tree to browse branches, /rewind to roll back files and conversation together, /export for round-trip archives. Sessions are not tied to a vendor: switch gateways and /resume continues the same context on the current provider.',
+      },
+      {
+        icon: 'box',
+        title: 'Workspace sessions have names and independent daemons',
+        body:
+          'golder workspace opens the global default, and -s coding enters another set from any directory; new / attach / list / status / stop / rm all address a name. Each name is an independent daemon with its own config, state and logs; attaching, inspecting or stopping never requires the original project directory, and legacy project-scoped sessions remain reachable through their qualified selector.',
       },
       {
         icon: 'shield',
@@ -345,13 +363,13 @@ const en = {
         icon: 'terminal',
         title: 'A first-class agent in tuios / herdr',
         body:
-          'Start it in a tuios window or a herdr pane and golder reports its own state: it shows up on the rail (working / waiting on you / done), approvals land in the Inbox, and a daemon restart brings the conversation back with golder --resume. Neither host changes; tuios needs one harness manifest.',
+          'Start it in a tuios window or a herdr pane and golder reports its own state: it shows up on the rail (working / waiting on you / done), approvals land in the Inbox, and a daemon restart brings the conversation back with golder --resume. Neither host changes; tuios gets one harness manifest from golder host-compat install, and herdr needs nothing.',
       },
       {
         icon: 'globe',
-        title: 'Real-world networking',
+        title: 'Network is per call; proxies are per provider',
         body:
-          '20 built-in gateways across four wire formats — OpenAI Chat, OpenAI Responses, Anthropic Messages, Gemini — plus any OpenAI-compatible endpoint; the network is off by default and granted with the call the reviewer approved under auto (/network follow ships on; turn it off for a per-call question), and a host or command can be pre-authorized. /proxy routes per provider: unselected ones go direct and ignore the shell’s HTTP_PROXY.',
+          '20 built-in gateways across four wire formats — OpenAI Chat, OpenAI Responses, Anthropic Messages, Gemini — plus any OpenAI-compatible endpoint. The network is off by default and granted per call: a call declares what it needs, auto grants it with the reviewer’s approval, and ask folds it into the same dialog as outside paths and sandbox escapes. There is no persistent network allow-list and no separate /network command. /proxy routes per provider: unselected ones go direct and ignore the shell’s HTTP_PROXY.',
       },
     ] as Feature[],
   },
@@ -371,8 +389,12 @@ const en = {
       },
       {
         title: 'Open a workspace',
-        body: 'golder workspace opens the built-in split-pane terminal: the agent in the first pane, Ctrl+b c for a shell, and the browser when you need it. Ctrl+b d detaches; the daemon and its panes keep running. Already used to tuios / herdr / tmux / zellij / screen? Run the single-agent golder in its pane instead.',
-        codes: ['golder workspace', 'golder   # already in a multiplexer: single agent'],
+        body: 'golder workspace opens the global default: the agent in the first pane, Ctrl+b c for a shell, and the agent opens the browser itself when needed. Ctrl+b d detaches; the daemon and its panes keep running. golder workspace -s coding enters another named session from any directory, and list / attach / stop all address a name. Already used to tuios / herdr / tmux / zellij / screen? Run the single-agent golder in its pane instead.',
+        codes: [
+          'golder workspace',
+          'golder workspace -s coding   # another named session',
+          'golder   # already in a multiplexer: single agent',
+        ],
       },
     ] as Step[],
   },
@@ -394,7 +416,7 @@ const en = {
       },
       {
         q: 'Is it safe? Will it edit my files behind my back?',
-        a: 'Three gates: a static hard-deny (sudo, rm -rf /, writes to ~/.ssh or credential material are refused outright — credentials are never grantable) → a per-call review (in auto every mutating call goes to the decision model, escalating to the session model when unsure: low risk runs, isolatable calls are contained, dangerous ones are denied, each with a one-line rationale) → the OS sandbox (read allow-list, writes limited to the project and temp dirs; the network is off by default and granted with the call the reviewer approved — /network follow off restores a per-call question). Switch to read-only to just watch.',
+        a: 'Three gates: a static hard-deny (sudo, rm -rf /, writes to ~/.ssh or credential material are refused outright — credentials are never grantable) → a per-call review (in auto every mutating call goes to the decision model, escalating to the session model when unsure: low risk runs, isolatable calls are contained, dangerous ones are denied, each with a one-line rationale) → the OS sandbox (read allow-list, writes limited to the project and temp dirs; the network is off by default and granted per call with the same capability review — there is no persistent network allow-list and no /network command). Switch to read-only to just watch.',
       },
       {
         q: 'Does the site work from mainland China?',
