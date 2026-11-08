@@ -34,14 +34,15 @@ export interface FaqItem {
 
 const zh = {
   meta: {
-    title: 'golder — 终端里的 AI 编码助手',
+    title: 'golder — 桌面与终端的 AI 编码助手',
     description:
-      '用 Go 编写的终端 AI 编码助手：读写文件、执行命令、检索代码、抓取网页，在对话中完成从理解需求到改好代码的闭环。单二进制、不锁定厂商，MIT 开源。',
+      '用 Go 编写的开源 AI 编码助手：原生桌面应用、终端工作区和 CLI 共享 Agent 核心，连接模型、文件、命令和浏览器，支持审批与沙箱。',
   },
   nav: {
     demo: '演示',
     features: '特性',
     highlights: '亮点',
+    architecture: '架构',
     quickstart: '上手',
     faq: 'FAQ',
     github: 'GitHub',
@@ -49,23 +50,32 @@ const zh = {
   },
   hero: {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
-    title: '终端里的 AI 编码助手',
+    title: '桌面与终端的 AI 编码助手',
     lead:
-      'golder 用 Go 写成一个单二进制。普通用户默认用 golder workspace：自带分屏终端，agent、shell 和浏览器在同一个面板里，把「理解需求 → 改好代码」跑成闭环；已经有习惯的终端复用器时，直接在它的 pane 里跑单 agent 的 golder。也能无头跑进脚本和 CI。',
+      'Golder 是用 Go 编写的开源 AI 编码助手。用原生 GUI 管理项目、对话、工具和审批；用终端工作区并排运行 agent、shell 和浏览器；也可以用 CLI、REPL 或无头模式接入已有工作流。',
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
-    installHint: 'macOS: brew install getan/tap/golder · Linux: 一键脚本 · Windows 从 Releases 下载 zip · 不需要任何运行时',
-    videoTitle: 'golder — 真实会话（空闲段已掐掉）',
+    ctaDesktop: '下载桌面版',
+    installHint: '这是 CLI 安装命令；桌面版请从 Releases 单独下载。浏览器功能需要本机安装 Chromium。',
+    guiAlt: 'Golder GUI 实际界面：项目与会话导航、Agent 对话和应用内架构图预览',
+    guiCaption: '桌面版实际界面：项目、会话、Agent 对话与 SVG 预览。',
+    videoTitle: '终端工作区 — 真实会话（空闲段已掐掉）',
     videoCaption:
       '真实录制：左边 agent 自己读码、打补丁，右边 shell 里 go test 从红到绿；中间的等待已剪掉（37 秒）',
   },
   highlights: {
     title: '为什么是 golder',
-    sub: '装好就能用；真正的差别在这六件事。',
+    sub: '同一套 Agent 核心，适合桌面、终端与自动化。',
     items: [
       {
         icon: 'box',
-        title: '默认用法：自带终端工作区',
+        title: '原生桌面工作台',
+        body:
+          'Golder GUI 用 MyGo 原生界面呈现项目、会话、流式对话、diff 卡片和审批，配有文件与变更视图、浏览器界面和可选终端。它直接复用 Agent 核心，不是把 TUI 包在窗口里。',
+      },
+      {
+        icon: 'box',
+        title: '自带终端工作区',
         body:
           'golder workspace 一个面板里跑 agent、shell 和浏览器（macOS / Linux 不必另装 tuios 或 kitty-browse）：左边 agent 改代码，右边 shell 跑测试，焦点即输入；浏览器由 agent 自己通过 browser 工具的 open 动作起在同一工作区（profile 与 socket 都在 .golder/browser/），再通过 snapshot/click/fill/wait/console/network 操作页面；预设（debug-fullstack、data-analysis、review）一次起好后端、前端和浏览器，snapshot 把所有 pane 的上下文一次交给模型。',
       },
@@ -79,7 +89,7 @@ const zh = {
         icon: 'shield',
         title: '轻量 agent + 真正的安全边界',
         body:
-          '和 pi 同一量级的单二进制，但多了逐调用审批门与 OS 沙箱（sandbox-exec / bubblewrap）：读限工作区、写限项目与临时目录、网络默认关闭；密钥和凭据路径读不到。',
+          '适用的工具调用受到权限模式、审批、路径授权和 OS 沙箱（sandbox-exec / bubblewrap）约束。默认读限工作区、写限项目与临时目录，工具网络按次授权；实际边界取决于平台和配置。',
       },
       {
         icon: 'terminal',
@@ -89,8 +99,8 @@ const zh = {
       },
       {
         icon: 'gauge',
-        title: '常驻内存约 50–100 MB',
-        body: '同类里的第一梯队，长时间挂着跑也不占机器。',
+        title: '轻量 CLI，桌面版独立安装',
+        body: 'CLI 为 Go 编译的独立程序；GUI 单独发布，按需提供图形界面、终端和浏览器。',
       },
       {
         icon: 'branch',
@@ -106,21 +116,27 @@ const zh = {
     items: [
       {
         icon: 'terminal',
-        title: '单二进制，三种形态',
+        title: '桌面、终端与无头模式',
         body:
-          '全屏 TUI、行式 REPL、无头 -p 一套命令完全对齐；--output-format stream-json 逐行 JSON 事件，方便脚本和 CI 消费。',
+          '原生 GUI 与 CLI 分别构建，共享 Agent 核心能力。终端可选分屏 workspace、全屏 TUI 或行式 REPL；无头 -p 和 stream-json 适合脚本与 CI。',
+      },
+      {
+        icon: 'terminal',
+        title: '桌面窗口与浏览器',
+        body:
+          '浏览器界面连接本机已安装的 Chromium。Computer Use 仍在开发，可在用户选定窗口后尝试观察和操作；不同系统有权限与能力限制，Linux / Windows 后端仍需真实桌面验收。',
       },
       {
         icon: 'shield',
-        title: '每个改动型调用都过审查，并给一行理由',
+        title: '可配置权限与风险评审',
         body:
-          '四档权限：只读 / 每次询问 / 自动 / 完全放行。auto 档每次改动型调用都先问决策模型（typesafe），拿不准再升级给会话模型——低风险放行、需隔离的进沙箱、高危拒绝，理由用对话语言写在卡片上；没有决策模型凭据时改走本地规则表。',
+          '四档权限：只读 / 每次询问 / 自动 / 完全放行。需要评审的调用会结合权限模式、风险规则和模型判断处理；审批、沙箱及路径授权的具体行为以当前模式和环境为准。',
       },
       {
         icon: 'box',
         title: '操作系统级沙箱',
         body:
-          'macOS 用 sandbox-exec、Linux 用 bubblewrap：读白名单（$HOME 里的密钥、凭据、历史一律读不到）、写限项目与临时目录、网络默认关闭且按次授权。效果能从命令完整读出的调用（git push、go test…）不再多套一层沙箱，卡片上标 ·unconfined；其余标 ·sandbox。',
+          'macOS 用 sandbox-exec、Linux 用 bubblewrap：受沙箱约束的调用默认按白名单读取、写限项目与临时目录，工具网络默认关闭且按次授权。批准的越界或沙箱外执行依权限模式单独处理；Windows 等平台的支持范围不同。',
       },
       {
         icon: 'key',
@@ -166,13 +182,31 @@ const zh = {
       },
     ] as Feature[],
   },
+  architecture: {
+    title: '从界面到 Agent：Golder 如何工作',
+    sub: '一张图看清桌面、终端、模型、工具和权限边界之间的关系。',
+    alt: 'Golder 系统架构图：GUI、终端与 CLI 连接 Agent 运行时、模型、工具、会话和安全边界',
+    caption: '架构概览为简化示意；具体权限和平台支持以实际工具及配置为准。',
+    items: [
+      { title: '01 / 选择入口', body: '原生 GUI 直接使用共享 Agent 核心；终端 TUI / REPL、CLI 和 workspace 面向命令行与自动化。Workspace 的 daemon 与 agent pane 是独立进程。' },
+      { title: '02 / Agent 循环', body: '运行时组装上下文、调用所选模型、执行工具并继续对话；会话、压缩与记忆帮助任务延续。' },
+      { title: '03 / 能力与边界', body: '文件、Shell、Web、MCP 和 Skills 连接本地与外部环境；适用调用经权限、审批、路径授权和沙箱处理，再访问项目、浏览器或用户选定的窗口。' },
+    ],
+    link: '查看主仓库文档',
+  },
   quickstart: {
     title: '三步上手',
-    sub: '二进制安装不需要 Go；下面三条命令在 macOS / Linux 上可直接复制。',
+    sub: '桌面版和 CLI 分开安装；下面是两种入口。',
+    desktopTitle: '先试试 Golder GUI',
+    desktopBody: '从官方 Releases 下载 macOS DMG、Windows 安装程序或 Linux 软件包。启动后选择项目，在设置中配置模型与凭证，即可通过桌面界面开始对话。',
+    desktopAction: '下载桌面版',
+    macNoticeTitle: 'macOS 首次打开提示',
+    macNotice: '当前 GUI 包使用临时签名，尚未经过 Apple 公证，首次打开时可能提示无法验证开发者。请仅从官方 Releases 下载，确认来源后可在「系统设置 → 隐私与安全性」选择「仍要打开」。计划近期加入 Apple Developer ID 签名和公证，以消除这类提示；其他安全告警或系统权限提示仍需分别判断。',
+    macNoticeLink: '查看 macOS 安装说明',
     steps: [
       {
-        title: '安装',
-        body: 'macOS 用 Homebrew，Linux 用一键脚本；都会识别系统与架构。Windows 从 Releases 下载 .zip 解压即可。',
+        title: '安装 CLI',
+        body: 'CLI 在 macOS 可用 Homebrew、Linux 可用一键脚本；Windows 从 Releases 下载 CLI 的 .zip。桌面版需单独下载。',
         codes: ['brew install getan/tap/golder', SITE.installCmd],
       },
       {
@@ -181,7 +215,7 @@ const zh = {
         codes: ['export OPENCODE_API_KEY=...'],
       },
       {
-        title: '打开工作区',
+        title: '在终端打开工作区',
         body: 'golder workspace 打开全局 default：第一格是 agent，Ctrl+b c 开 shell，浏览器由 agent 按需自己打开。Ctrl+b d 只断开客户端，daemon 和 pane 继续跑；golder workspace -s coding 从任何目录进入另一套命名会话，list / attach / stop 都按名字。已经习惯 tuios / herdr / tmux / zellij / screen 的话，直接在它的 pane 里跑 golder 单 agent 模式。',
         codes: [
           'golder workspace',
@@ -196,12 +230,16 @@ const zh = {
     sub: '还有别的问题？到 GitHub 提 issue。',
     items: [
       {
+        q: '为什么 macOS 首次打开 GUI 会提示无法验证开发者？',
+        a: '当前发布包使用临时签名，尚未经过 Apple 公证。请只从官方 Releases 下载，确认来源后在系统设置的「隐私与安全性」中选择「仍要打开」。我们计划近期加入 Developer ID 签名和公证；辅助功能、屏幕录制等系统授权仍按需请求。不要把其他安全告警一概当作签名提示。',
+      },
+      {
         q: '需要 Node 或别的运行时吗？',
-        a: '不需要。golder 是 Go 编译的单个二进制，下载即用；只有从源码构建才需要 Go 1.27+。',
+        a: '运行 Golder 不需要 Node 或 Python；GUI 和 CLI 是分别发布的程序。从源码构建需要 Go，浏览器功能需要本机 Chromium，Linux GUI 还需要相应的系统图形库。',
       },
       {
         q: '我的代码会被上传到哪里？',
-        a: '只会发送给你自己选择的模型网关（OpenAI、Anthropic、DeepSeek 或你指定的任意端点）。会话、记忆、凭据都存在本地 ~/.golder，golder 没有自己的后端。',
+        a: '对话和用于完成任务的上下文会发送给你配置的模型服务；使用浏览器、网络工具或 MCP 扩展时，这些服务也可能接收相应请求。会话、记忆和凭据保存在本地，具体发送内容取决于你选择的模型、工具和授权。',
       },
       {
         q: '支持哪些模型？',
@@ -241,14 +279,15 @@ const zh = {
 
 const en = {
   meta: {
-    title: 'golder — the AI coding agent in your terminal',
+    title: 'golder — an AI coding agent for desktop and terminal',
     description:
-      'A terminal AI coding agent written in Go: read and write files, run commands, search code, fetch the web — closing the loop from understanding a task to shipping the change. Single binary, no vendor lock-in, MIT.',
+      'An open-source AI coding agent in Go: a native desktop app, terminal workspace and CLI share an Agent core for models, files, commands and the browser, with configurable approvals and sandboxing.',
   },
   nav: {
     demo: 'Demo',
     features: 'Features',
     highlights: 'Highlights',
+    architecture: 'Architecture',
     quickstart: 'Quickstart',
     faq: 'FAQ',
     github: 'GitHub',
@@ -256,23 +295,32 @@ const en = {
   },
   hero: {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
-    title: 'The AI coding agent in your terminal',
+    title: 'An AI coding agent for desktop and terminal',
     lead:
-      'golder is a single Go binary. For most people the entry point is golder workspace: a built-in split-pane terminal with the agent, a shell and the browser in one panel, closing the loop from “understand the task” to “the change is in”. If you already live in a terminal multiplexer, run the single-agent golder in its pane instead. Headless mode covers scripts and CI.',
+      'Golder is an open-source AI coding agent written in Go. Manage projects, conversations, tools and approvals in a native GUI; run the agent, a shell and a browser side by side in a terminal workspace; or use the CLI, REPL and headless mode in your existing workflow.',
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
-    installHint: 'macOS: brew install getan/tap/golder · Linux: one-line script · Windows: zip from Releases · no runtime required',
-    videoTitle: 'golder — a real session (idle time trimmed)',
+    ctaDesktop: 'Download desktop app',
+    installHint: 'This command installs the CLI; download the desktop app separately from Releases. Browser features require an installed Chromium.',
+    guiAlt: 'Golder GUI showing project and chat navigation, an Agent conversation and an architecture diagram preview',
+    guiCaption: 'Golder GUI: projects, sessions, an Agent conversation and an in-app SVG preview.',
+    videoTitle: 'Terminal workspace — a real session (idle time trimmed)',
     videoCaption:
       'Recorded for real: the agent reads and patches on the left while go test goes red to green in a shell pane on the right; the waits are trimmed (37s)',
   },
   highlights: {
     title: 'Why golder',
-    sub: 'One command to install; the differences are these six.',
+    sub: 'A shared Agent core for desktop, terminal and automation.',
     items: [
       {
         icon: 'box',
-        title: 'The default: a built-in terminal workspace',
+        title: 'A native desktop workspace',
+        body:
+          'Golder GUI uses MyGo native UI for projects, sessions, streamed conversations, diff cards and approvals, with file and change views, a browser surface and an optional terminal. It reuses the Agent core rather than wrapping a TUI.',
+      },
+      {
+        icon: 'box',
+        title: 'A built-in terminal workspace',
         body:
           'golder workspace runs the agent, a shell and the browser in one panel (no separate tuios or kitty-browse install on macOS / Linux): the agent patches on the left while the shell runs tests on the right, and focus is input. The agent opens the browser itself through the browser tool’s open action (profile and socket under .golder/browser/), then drives pages with snapshot/click/fill/wait/console/network; presets (debug-fullstack, data-analysis, review) start backend, frontend and browser together, and snapshot hands the model every pane’s context at once.',
       },
@@ -286,7 +334,7 @@ const en = {
         icon: 'shield',
         title: 'Lightweight like pi, with a real security boundary',
         body:
-          'The same single-binary class, plus a per-call approval gate and an OS sandbox (sandbox-exec / bubblewrap): reads stay in the workspace, writes in the project and temp dirs, the network is off by default, and credentials are unreadable.',
+          'Applicable tool calls are governed by permission modes, approvals, path grants and OS sandboxing (sandbox-exec / bubblewrap). Default sandboxed reads and writes are scoped, and tool network access is granted per call; actual boundaries depend on platform and configuration.',
       },
       {
         icon: 'terminal',
@@ -296,8 +344,8 @@ const en = {
       },
       {
         icon: 'gauge',
-        title: '~50–100 MB resident',
-        body: 'Top tier for this class of agent, so it can stay open all day.',
+        title: 'A lightweight CLI; a separate desktop app',
+        body: 'The CLI is a Go-compiled program. The separately distributed GUI adds a graphical workspace, terminal and browser surface as needed.',
       },
       {
         icon: 'branch',
@@ -313,21 +361,27 @@ const en = {
     items: [
       {
         icon: 'terminal',
-        title: 'One binary, three shapes',
+        title: 'Desktop, terminal and headless',
         body:
-          'Full-screen TUI, line REPL, and headless -p with identical commands; --output-format stream-json emits one JSON event per line for scripts and CI.',
+          'The native GUI and CLI are separate builds sharing Agent capabilities. Choose a split-pane workspace, full-screen TUI or line REPL in the terminal; headless -p and stream-json support scripts and CI.',
+      },
+      {
+        icon: 'terminal',
+        title: 'Desktop windows and browser',
+        body:
+          'The browser surface connects to a locally installed Chromium. Computer Use is under development and can attempt to observe and operate a user-selected window; permissions and capabilities vary by platform, and Linux / Windows backends still need real-desktop validation.',
       },
       {
         icon: 'shield',
-        title: 'Every mutating call gets reviewed, with a one-line rationale',
+        title: 'Configurable permissions and risk review',
         body:
-          'Four permission modes: read-only / ask / auto / full-access. In auto every mutating call goes to the decision model first (typesafe), escalating to the session model when it is unsure — low risk runs, isolatable calls are contained, dangerous ones are denied, each with a rationale written in the conversation’s own language. Without a decision-model credential the local rule table takes that slot.',
+          'Four permission modes: read-only / ask / auto / full-access. Calls that need review are handled using the selected mode, risk rules and model judgment; approvals, sandboxing and path grants depend on the mode and environment.',
       },
       {
         icon: 'box',
         title: 'OS-level sandboxing',
         body:
-          'sandbox-exec on macOS, bubblewrap on Linux: read allow-list (secrets, credentials and history under $HOME are unreadable), writes limited to the project and temp dirs, network off by default and granted per call. A call whose whole effect is readable from its command (git push, go test, …) skips the extra sandbox and is marked ·unconfined; everything else is marked ·sandbox.',
+          'Sandboxed calls use sandbox-exec on macOS or bubblewrap on Linux: reads follow an allow-list, writes are scoped to the project and temp directories, and tool network access is off by default and granted per call. Outside paths and execution outside the sandbox are handled separately according to the permission mode; support varies on other platforms.',
       },
       {
         icon: 'key',
@@ -373,13 +427,31 @@ const en = {
       },
     ] as Feature[],
   },
+  architecture: {
+    title: 'From interface to Agent: how Golder works',
+    sub: 'A map of the desktop, terminal, models, tools and permission boundaries.',
+    alt: 'Golder architecture diagram: GUI, terminal and CLI connect to the Agent runtime, models, tools, session state and security boundaries',
+    caption: 'Diagram labels are in Chinese. This overview is simplified; actual permissions and platform support depend on the tool and configuration.',
+    items: [
+      { title: '01 / Choose an interface', body: 'The native GUI uses the shared Agent core; the TUI / REPL, CLI and workspace serve terminal and automation workflows. A workspace daemon and its agent panes are separate processes.' },
+      { title: '02 / The Agent loop', body: 'The runtime assembles context, calls the selected model, executes tools and continues the conversation. Sessions, compaction and memory help work continue.' },
+      { title: '03 / Capabilities and boundaries', body: 'Files, shell, web, MCP and Skills connect local and external resources. Applicable calls pass through permissions, approvals, path grants and sandboxing before reaching a project, browser or user-selected window.' },
+    ],
+    link: 'Read the project documentation',
+  },
   quickstart: {
     title: 'Get started in three steps',
-    sub: 'No Go toolchain needed for the binary install; the commands below work on macOS / Linux.',
+    sub: 'The desktop app and CLI are installed separately. Choose the entry point that fits your work.',
+    desktopTitle: 'Try Golder GUI',
+    desktopBody: 'Download the macOS DMG, Windows installer or Linux package from the official Releases page. Open a project and configure a model and credential in Settings to start a conversation.',
+    desktopAction: 'Download desktop app',
+    macNoticeTitle: 'Opening the app on macOS',
+    macNotice: 'Current GUI packages are ad-hoc signed and not yet notarized, so macOS may warn that the developer cannot be verified. Download only from official Releases; after verifying the source, use Open Anyway in System Settings → Privacy & Security. Developer ID signing and notarization are planned soon to remove this warning; other security alerts and system permission prompts still need their own consideration.',
+    macNoticeLink: 'Read macOS installation details',
     steps: [
       {
-        title: 'Install',
-        body: 'Homebrew on macOS, the one-line script on Linux; both detect the architecture. On Windows, download the .zip from Releases.',
+        title: 'Install the CLI',
+        body: 'Use Homebrew on macOS or the one-line script on Linux; Windows users can download the CLI .zip from Releases. The desktop app is a separate download.',
         codes: ['brew install getan/tap/golder', SITE.installCmd],
       },
       {
@@ -388,7 +460,7 @@ const en = {
         codes: ['export OPENCODE_API_KEY=...'],
       },
       {
-        title: 'Open a workspace',
+        title: 'Open a terminal workspace',
         body: 'golder workspace opens the global default: the agent in the first pane, Ctrl+b c for a shell, and the agent opens the browser itself when needed. Ctrl+b d detaches; the daemon and its panes keep running. golder workspace -s coding enters another named session from any directory, and list / attach / stop all address a name. Already used to tuios / herdr / tmux / zellij / screen? Run the single-agent golder in its pane instead.',
         codes: [
           'golder workspace',
@@ -403,12 +475,16 @@ const en = {
     sub: 'Something else on your mind? Open an issue on GitHub.',
     items: [
       {
+        q: 'Why does macOS warn when I first open the GUI?',
+        a: 'Current GUI packages are ad-hoc signed and not yet notarized. Download only from official Releases and, after confirming the source, use Open Anyway in System Settings → Privacy &amp; Security. Developer ID signing and notarization are planned soon; Accessibility and Screen Recording permissions may still be requested. Do not treat every security alert as a signing warning.',
+      },
+      {
         q: 'Does it need Node or any runtime?',
-        a: 'No. golder is a single Go binary — download and run. Only building from source needs Go 1.27+.',
+        a: 'Running Golder does not require Node or Python. The GUI and CLI are separate downloads; building from source requires Go, browser features need a local Chromium, and the Linux GUI requires system graphics libraries.',
       },
       {
         q: 'Where does my code go?',
-        a: 'Only to the model gateway you choose (OpenAI, Anthropic, DeepSeek, or any endpoint you point it at). Sessions, memory and credentials live locally in ~/.golder; golder has no backend of its own.',
+        a: 'Conversations and task context are sent to your configured model service. Browser, web and MCP tools may also send requests to the services you use. Sessions, memory and credentials are stored locally; what leaves your machine depends on your chosen models, tools and approvals.',
       },
       {
         q: 'Which models are supported?',

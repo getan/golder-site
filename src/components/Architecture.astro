@@ -1,0 +1,38 @@
+---
+import { content, SITE, type Lang } from '../content';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const c = content[lang].architecture;
+---
+<section id="architecture">
+  <div class="wrap">
+    <h2>{c.title}</h2>
+    <p class="section-sub">{c.sub}</p>
+    <figure class="architecture-figure">
+      <a href="/architecture/golder-architecture-zh.svg" target="_blank" rel="noopener">
+        <img src="/architecture/golder-architecture-zh.svg" alt={c.alt} width="1200" height="1120" loading="lazy" />
+      </a>
+      <figcaption>{c.caption}</figcaption>
+    </figure>
+    <div class="grid">
+      {c.items.map((item) => (
+        <article class="card">
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </div>
+    <p class="architecture-link"><a href={`${SITE.repo}/blob/master/gui/README.md`} rel="noopener">{c.link} ↗</a></p>
+  </div>
+</section>
+
+<style>
+  .architecture-figure { max-width: 900px; margin: 0 auto 28px; }
+  .architecture-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 12px; background: #faf9f6; }
+  .architecture-figure a { display: block; }
+  .architecture-figure figcaption { margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .architecture-link { margin: 20px 0 0; font-size: 14px; }
+</style>

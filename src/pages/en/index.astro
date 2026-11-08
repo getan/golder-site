@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Hero from '../../components/Hero.astro';
 import Highlights from '../../components/Highlights.astro';
 import Features from '../../components/Features.astro';
+import Architecture from '../../components/Architecture.astro';
 import Quickstart from '../../components/Quickstart.astro';
 import Faq from '../../components/Faq.astro';
 import { content, SITE, stripTags } from '../../content';
@@ -45,6 +46,7 @@ const jsonLd = {
 >
   <Hero lang={lang} />
   <Highlights lang={lang} />
+  <Architecture lang={lang} />
   <Quickstart lang={lang} />
   <Features lang={lang} />
   <Faq lang={lang} />
