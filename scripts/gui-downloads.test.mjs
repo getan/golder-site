@@ -11,7 +11,7 @@ async function load(relative) {
   return import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].contents).toString('base64')}`);
 }
 
-const { detectDesktopOS, assetNames, releaseDownloads } = await load('../src/lib/gui-downloads.ts');
+const { detectDesktopOS, assetNames, releaseDownloads, releaseDownloadsFromHTML } = await load('../src/lib/gui-downloads.ts');
 const { onRequestGet } = await load('../functions/api/gui-downloads.ts');
 
 const tag = 'v1.5.69';
@@ -45,6 +45,9 @@ test('only exposes exact uploaded assets belonging to a stable release', () => {
   assert.equal(releaseDownloads({ tag_name: 'v1.2.3/../../escape', assets: [] }), null);
   assert.equal(releaseDownloads({ tag_name: 'v1.2.3-rc1', assets: [] }), null);
   assert.equal(releaseDownloads({ tag_name: tag }), null);
+  const fragment = `<a href="/getan/golder/releases/download/${tag}/${names.macIntel}">Intel</a><a href="https://evil.example/${names.macArm}">other</a>`;
+  assert.deepEqual(releaseDownloadsFromHTML(tag, fragment), { tag, assets: { macIntel: asset(names.macIntel).browser_download_url } });
+  assert.equal(releaseDownloadsFromHTML('v1.2.3/../../evil', fragment), null);
 });
 
 test('endpoint caches validated release data and fails closed on upstream errors', async () => {
@@ -74,6 +77,18 @@ test('endpoint caches validated release data and fails closed on upstream errors
     const second = await onRequestGet(ctx);
     assert.equal(second.status, 200);
     assert.equal(hits, 1);
+
+    stored = undefined;
+    globalThis.fetch = async (url, init) => {
+      if (init?.method === 'HEAD') return new Response(null, { status: 302, headers: { location: `https://github.com/getan/golder/releases/tag/${tag}` } });
+      if (String(url).includes('/expanded_assets/')) return new Response(`<a href="/getan/golder/releases/download/${tag}/${names.macIntel}">Intel</a>`);
+      return new Response('rate limited', { status: 403 });
+    };
+    const fallback = await onRequestGet(ctx);
+    assert.equal(fallback.status, 200);
+    assert.equal(fallback.headers.get('x-gui-source'), 'html');
+    assert.deepEqual(await fallback.json(), { tag, assets: { macIntel: asset(names.macIntel).browser_download_url } });
+    await Promise.all(pending);
 
     stored = undefined;
     globalThis.fetch = async () => new Response('rate limited', { status: 403 });

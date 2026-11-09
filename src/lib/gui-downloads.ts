@@ -41,3 +41,17 @@ export function releaseDownloads(data: unknown): { tag: string; assets: Partial<
   }
   return { tag, assets };
 }
+
+// GitHub's public expanded-assets fragment avoids the REST API's shared-IP
+// rate limit. Only exact links on the expected release are accepted.
+export function releaseDownloadsFromHTML(tag: string, html: string): { tag: string; assets: Partial<Record<AssetKey, string>> } | null {
+  if (!/^v\d+\.\d+\.\d+$/.test(tag)) return null;
+  const assets: Partial<Record<AssetKey, string>> = {};
+  for (const [key, name] of Object.entries(assetNames(tag.slice(1))) as [AssetKey, string][]) {
+    const path = `/getan/golder/releases/download/${tag}/${name}`;
+    if (html.includes(`href="${path}"`) || html.includes(`href='${path}'`)) {
+      assets[key] = `https://github.com${path}`;
+    }
+  }
+  return { tag, assets };
+}
