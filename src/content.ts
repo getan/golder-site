@@ -56,7 +56,7 @@ const zh = {
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     ctaDesktop: '下载桌面版',
-    installHint: '这是 CLI 安装命令；桌面版请点击上方按钮选择。浏览器功能需要本机安装 Chromium。',
+    installHint: '这是 CLI 安装命令；桌面版请点击上方按钮选择。浏览器功能可使用本机安装的 Chrome 或 Chromium。',
     guiAlt: 'Golder GUI 实际界面：项目与会话导航、Agent 对话和应用内架构图预览',
     guiCaption: '桌面版实际界面：项目、会话、Agent 对话与 SVG 预览。',
     videoTitle: '终端工作区 — 真实会话（空闲段已掐掉）',
@@ -124,7 +124,7 @@ const zh = {
         icon: 'terminal',
         title: '桌面窗口与浏览器',
         body:
-          '浏览器界面连接本机已安装的 Chromium。Computer Use 仍在开发，可在用户选定窗口后尝试观察和操作；不同系统有权限与能力限制，Linux / Windows 后端仍需真实桌面验收。',
+          '浏览器界面使用本机安装的 Chrome 或 Chromium；其他 Chromium 内核浏览器的兼容性因产品和平台而异。Computer Use 仍在开发，可在用户选定窗口后尝试观察和操作；不同系统有权限与能力限制，Linux / Windows 后端仍需真实桌面验收。',
       },
       {
         icon: 'shield',
@@ -235,7 +235,7 @@ const zh = {
       },
       {
         q: '需要 Node 或别的运行时吗？',
-        a: '运行 Golder 不需要 Node 或 Python；GUI 和 CLI 是分别发布的程序。从源码构建需要 Go，浏览器功能需要本机 Chromium，Linux GUI 还需要相应的系统图形库。',
+        a: '运行 Golder 不需要 Node 或 Python；GUI 和 CLI 是分别发布的程序。从源码构建需要 Go，浏览器功能可使用本机 Chrome 或 Chromium，Linux GUI 还需要相应的系统图形库。',
       },
       {
         q: '我的代码会被上传到哪里？',
@@ -301,7 +301,7 @@ const en = {
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     ctaDesktop: 'Download desktop app',
-    installHint: 'This command installs the CLI; use the button above to choose the desktop app. Browser features require an installed Chromium.',
+    installHint: 'This command installs the CLI; use the button above to choose the desktop app. Browser features can use an installed Chrome or Chromium.',
     guiAlt: 'Golder GUI showing project and chat navigation, an Agent conversation and an architecture diagram preview',
     guiCaption: 'Golder GUI: projects, sessions, an Agent conversation and an in-app SVG preview.',
     videoTitle: 'Terminal workspace — a real session (idle time trimmed)',
@@ -369,7 +369,7 @@ const en = {
         icon: 'terminal',
         title: 'Desktop windows and browser',
         body:
-          'The browser surface connects to a locally installed Chromium. Computer Use is under development and can attempt to observe and operate a user-selected window; permissions and capabilities vary by platform, and Linux / Windows backends still need real-desktop validation.',
+          'The browser surface uses a locally installed Chrome or Chromium; compatibility with other Chromium-based browsers varies by product and platform. Computer Use is under development and can attempt to observe and operate a user-selected window; permissions and capabilities vary by platform, and Linux / Windows backends still need real-desktop validation.',
       },
       {
         icon: 'shield',
@@ -480,7 +480,7 @@ const en = {
       },
       {
         q: 'Does it need Node or any runtime?',
-        a: 'Running Golder does not require Node or Python. The GUI and CLI are separate downloads; building from source requires Go, browser features need a local Chromium, and the Linux GUI requires system graphics libraries.',
+        a: 'Running Golder does not require Node or Python. The GUI and CLI are separate downloads; building from source requires Go, browser features can use a locally installed Chrome or Chromium, and the Linux GUI requires system graphics libraries.',
       },
       {
         q: 'Where does my code go?',
