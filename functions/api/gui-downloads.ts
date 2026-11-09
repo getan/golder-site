@@ -1,5 +1,5 @@
 import { releaseDownloads, releaseDownloadsFromHTML } from '../../src/lib/gui-downloads';
-import { fetchLatest, snapshotCache } from './latest';
+import { snapshotCache } from './latest';
 
 interface Context {
   request: Request;
@@ -7,11 +7,18 @@ interface Context {
 }
 
 async function fromPublicRelease() {
-  const latest = await fetchLatest();
-  if (!('snapshot' in latest) || !/^v\d+\.\d+\.\d+$/.test(latest.snapshot.tag)) throw new Error('latest release unavailable');
-  const tag = latest.snapshot.tag;
+  const latest = await fetch('https://github.com/getan/golder/releases/latest', {
+    method: 'HEAD', redirect: 'manual', signal: AbortSignal.timeout(4000),
+    headers: { 'user-agent': 'golder-site (+https://golder-cli.pages.dev)' },
+  });
+  const location = latest.headers.get('location');
+  if (latest.status < 300 || latest.status >= 400 || !location) throw new Error('latest release unavailable');
+  const url = new URL(location, 'https://github.com');
+  const match = url.pathname.match(/^\/getan\/golder\/releases\/tag\/(v\d+\.\d+\.\d+)$/);
+  if (url.origin !== 'https://github.com' || url.search || url.hash || !match) throw new Error('invalid release redirect');
+  const tag = match[1];
   const res = await fetch(`https://github.com/getan/golder/releases/expanded_assets/${tag}`, {
-    redirect: 'manual',
+    redirect: 'manual', signal: AbortSignal.timeout(4000),
     headers: { 'user-agent': 'golder-site (+https://golder-cli.pages.dev)' },
   });
   if (!res.ok) throw new Error(`release assets ${res.status}`);
@@ -38,6 +45,7 @@ export const onRequestGet = async (ctx: Context): Promise<Response> => {
     let source = 'api';
     try {
       const res = await fetch('https://api.github.com/repos/getan/golder/releases/latest', {
+        signal: AbortSignal.timeout(4000),
         headers: { 'user-agent': 'golder-site (+https://golder-cli.pages.dev)', accept: 'application/vnd.github+json' },
       });
       if (!res.ok) throw new Error(`upstream ${res.status}`);

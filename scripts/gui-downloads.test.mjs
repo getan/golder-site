@@ -66,8 +66,9 @@ test('endpoint caches validated release data and fails closed on upstream errors
     waitUntil: (promise) => pending.push(promise),
   };
   try {
-    globalThis.fetch = async () => {
+    globalThis.fetch = async (_url, init) => {
       hits++;
+      assert.ok(init.signal, 'GitHub requests must have a deadline');
       return new Response(JSON.stringify({ tag_name: tag, assets: [asset(names.macArm)] }), { status: 200 });
     };
     const first = await onRequestGet(ctx);
@@ -80,6 +81,7 @@ test('endpoint caches validated release data and fails closed on upstream errors
 
     stored = undefined;
     globalThis.fetch = async (url, init) => {
+      assert.ok(init.signal, 'fallback requests must have a deadline');
       if (init?.method === 'HEAD') return new Response(null, { status: 302, headers: { location: `https://github.com/getan/golder/releases/tag/${tag}` } });
       if (String(url).includes('/expanded_assets/')) return new Response(`<a href="/getan/golder/releases/download/${tag}/${names.macIntel}">Intel</a>`);
       return new Response('rate limited', { status: 403 });

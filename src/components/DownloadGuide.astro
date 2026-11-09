@@ -110,7 +110,9 @@ const text = zh ? {
       root.querySelectorAll<HTMLDetailsElement>('details[data-system]').forEach((item) => { item.open = item === selected; });
       if (detected) detected.textContent = (root.dataset.recognized ?? '') + (selected.dataset.systemLabel ?? '');
     }
-    fetch('/api/gui-downloads', { headers: { accept: 'application/json' } })
+    const controller = new AbortController();
+    const deadline = setTimeout(() => controller.abort(), 15000);
+    fetch('/api/gui-downloads', { headers: { accept: 'application/json' }, signal: controller.signal })
       .then(async (res) => {
         if (!res.ok) throw new Error('release unavailable');
         const data: unknown = await res.json();
@@ -133,7 +135,8 @@ const text = zh ? {
         });
         if (status) status.textContent = (root.dataset.ready ?? '') + tag;
       })
-      .catch(() => { if (status) status.textContent = root.dataset.failure ?? ''; });
+      .catch(() => { if (status) status.textContent = root.dataset.failure ?? ''; })
+      .finally(() => clearTimeout(deadline));
   }
 </script>
 
