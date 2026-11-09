@@ -1,0 +1,158 @@
+---
+import { SITE, type Lang } from '../content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+const text = zh ? {
+  title: '选择适合你电脑的桌面版',
+  intro: '网站会识别操作系统并把相关选项放在前面；不会自动猜测芯片型号。',
+  loading: '正在检查最新版本的安装包；如果未加载，可通过下方按钮前往 GitHub。',
+  ready: '最新版本：',
+  unavailable: '暂未上传，查看 GitHub',
+  failure: '暂时无法获取安装包列表。请通过下方按钮前往 GitHub 手动选择。',
+  recognized: '检测到你的系统：',
+  unknown: '无法可靠识别当前设备，请在下方手动选择电脑系统。',
+  recommended: '适合当前系统',
+  mac: 'Mac',
+  macHelp: '不知道芯片？点击屏幕左上角  →「关于本机」，查看「芯片」或「处理器」。',
+  macArm: 'Apple 芯片（M1、M2、M3 等）',
+  macIntel: 'Intel 处理器',
+  macInstall: '下载后打开 DMG，将 Golder GUI 拖入「应用程序」。需要 macOS 14 或更新版本。',
+  windows: 'Windows',
+  windowsHelp: '适用于 64 位 Intel / AMD 电脑。双击下载的安装程序。',
+  windowsDownload: '下载 Windows 安装程序',
+  windowsArm: 'Windows ARM 设备请先确认 x64 应用兼容性。',
+  linux: 'Linux',
+  linuxHelp: 'Ubuntu / Debian 可选 .deb；其他发行版可选压缩包。请按电脑架构选择。',
+  linuxDebAmd64: 'Debian / Ubuntu · Intel / AMD',
+  linuxDebArm64: 'Debian / Ubuntu · ARM64',
+  linuxTarAmd64: '压缩包 · Intel / AMD',
+  linuxTarArm64: '压缩包 · ARM64',
+  all: '在 GitHub 查看所有版本和文件',
+  security: '新版 macOS 安装包使用 Developer ID 签名并经过 Apple 公证。首次打开时，系统可能要求确认打开从互联网下载的应用；辅助功能、屏幕录制等权限提示仍可能出现。',
+} : {
+  title: 'Choose the desktop app for your computer',
+  intro: 'We put your detected operating system first; we do not guess your processor.',
+  loading: 'Checking the latest packages. If this does not load, the buttons lead to GitHub.',
+  ready: 'Latest version: ',
+  unavailable: 'Not yet available; view GitHub',
+  failure: 'Could not load the package list. Use the buttons below to choose on GitHub.',
+  recognized: 'Detected operating system: ',
+  unknown: 'Could not reliably identify this device. Choose your computer system below.',
+  recommended: 'For this system',
+  mac: 'Mac',
+  macHelp: 'Not sure which chip? Open the  menu → About This Mac and check Chip or Processor.',
+  macArm: 'Apple chip (M1, M2, M3 and later)',
+  macIntel: 'Intel processor',
+  macInstall: 'Open the DMG and drag Golder GUI to Applications. Requires macOS 14 or later.',
+  windows: 'Windows',
+  windowsHelp: 'For 64-bit Intel / AMD PCs. Open the downloaded installer.',
+  windowsDownload: 'Download Windows installer',
+  windowsArm: 'On Windows ARM, first check compatibility with x64 apps.',
+  linux: 'Linux',
+  linuxHelp: 'Choose .deb for Ubuntu / Debian, or an archive for other distributions. Match your computer architecture.',
+  linuxDebAmd64: 'Debian / Ubuntu · Intel / AMD',
+  linuxDebArm64: 'Debian / Ubuntu · ARM64',
+  linuxTarAmd64: 'Archive · Intel / AMD',
+  linuxTarArm64: 'Archive · ARM64',
+  all: 'View all versions and files on GitHub',
+  security: 'Recent macOS packages are Developer ID signed and Apple-notarized. On first launch, macOS may ask to confirm opening an app downloaded from the internet; Accessibility or Screen Recording prompts may still appear.',
+};
+---
+<div id="desktop-download" class="download-guide" data-ready={text.ready} data-unavailable={text.unavailable} data-failure={text.failure} data-recognized={text.recognized} data-unknown={text.unknown}>
+  <h4>{text.title}</h4>
+  <p class="intro">{text.intro}</p>
+  <p class="detected" data-detected aria-live="polite">{text.unknown}</p>
+  <p class="status" data-status aria-live="polite">{text.loading}</p>
+  <div class="systems">
+    <details class="system" data-system="macos" data-system-label={text.mac} open>
+      <summary>{text.mac} <span class="recommended">{text.recommended}</span></summary>
+      <p>{text.macHelp}</p>
+      <div class="download-buttons">
+        <a class="btn" href={SITE.releases} data-asset="macArm" data-label={text.macArm}>{text.macArm} ↓</a>
+        <a class="btn" href={SITE.releases} data-asset="macIntel" data-label={text.macIntel}>{text.macIntel} ↓</a>
+      </div>
+      <p class="help">{text.macInstall}</p>
+    </details>
+    <details class="system" data-system="windows" data-system-label={text.windows} open>
+      <summary>{text.windows} <span class="recommended">{text.recommended}</span></summary>
+      <p>{text.windowsHelp}</p>
+      <div class="download-buttons"><a class="btn" href={SITE.releases} data-asset="windows" data-label={text.windowsDownload}>{text.windowsDownload} ↓</a></div>
+      <p class="help">{text.windowsArm}</p>
+    </details>
+    <details class="system" data-system="linux" data-system-label={text.linux} open>
+      <summary>{text.linux} <span class="recommended">{text.recommended}</span></summary>
+      <p>{text.linuxHelp}</p>
+      <div class="download-buttons">
+        <a class="btn" href={SITE.releases} data-asset="linuxDebAmd64" data-label={text.linuxDebAmd64}>{text.linuxDebAmd64} ↓</a>
+        <a class="btn" href={SITE.releases} data-asset="linuxDebArm64" data-label={text.linuxDebArm64}>{text.linuxDebArm64} ↓</a>
+        <a class="btn" href={SITE.releases} data-asset="linuxTarAmd64" data-label={text.linuxTarAmd64}>{text.linuxTarAmd64} ↓</a>
+        <a class="btn" href={SITE.releases} data-asset="linuxTarArm64" data-label={text.linuxTarArm64}>{text.linuxTarArm64} ↓</a>
+      </div>
+    </details>
+  </div>
+  <p class="security">{text.security}</p>
+  <a class="all-releases" href={SITE.releases} rel="noopener">{text.all} ↗</a>
+</div>
+
+<script>
+  import { assetNames, detectDesktopOS, type AssetKey } from '../lib/gui-downloads';
+
+  const root = document.querySelector<HTMLElement>('.download-guide');
+  if (root) {
+    const detected = root.querySelector<HTMLElement>('[data-detected]');
+    const status = root.querySelector<HTMLElement>('[data-status]');
+    const os = detectDesktopOS(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
+    const selected = root.querySelector<HTMLDetailsElement>(`details[data-system="${os}"]`);
+    if (selected) {
+      selected.dataset.recommended = 'true';
+      root.querySelectorAll<HTMLDetailsElement>('details[data-system]').forEach((item) => { item.open = item === selected; });
+      if (detected) detected.textContent = (root.dataset.recognized ?? '') + (selected.dataset.systemLabel ?? '');
+    }
+    fetch('/api/gui-downloads', { headers: { accept: 'application/json' } })
+      .then(async (res) => {
+        if (!res.ok) throw new Error('release unavailable');
+        const data: unknown = await res.json();
+        if (!data || typeof data !== 'object') throw new Error('invalid response');
+        const release = data as { tag?: unknown; assets?: unknown };
+        if (typeof release.tag !== 'string' || !/^v\d+\.\d+\.\d+$/.test(release.tag) || !release.assets || typeof release.assets !== 'object') throw new Error('invalid response');
+        const tag = release.tag;
+        const names = assetNames(tag.slice(1));
+        const assets = release.assets as Partial<Record<AssetKey, unknown>>;
+        root.querySelectorAll<HTMLAnchorElement>('a[data-asset]').forEach((link) => {
+          const key = link.dataset.asset as AssetKey;
+          if (!Object.hasOwn(names, key)) return;
+          const url = `https://github.com/getan/golder/releases/download/${tag}/${names[key]}`;
+          if (assets[key] === url) {
+            link.href = url;
+          } else {
+            link.textContent = `${link.dataset.label ?? ''} — ${root.dataset.unavailable ?? ''}`;
+            link.classList.add('unavailable');
+          }
+        });
+        if (status) status.textContent = (root.dataset.ready ?? '') + tag;
+      })
+      .catch(() => { if (status) status.textContent = root.dataset.failure ?? ''; });
+  }
+</script>
+
+<style>
+  .download-guide { scroll-margin-top: 80px; }
+  h4 { margin: 0 0 4px; font-size: 18px; }
+  .intro, .status, .detected, .security { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+  .detected { color: var(--text); font-weight: 600; }
+  .systems { display: flex; flex-direction: column; gap: 12px; margin: 18px 0; }
+  .system { padding: 18px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; }
+  .system[data-recommended='true'] { order: -1; border-color: var(--green); }
+  summary { cursor: pointer; font-size: 16px; font-weight: 600; }
+  .system[open] summary { margin-bottom: 8px; }
+  .recommended { display: none; margin-left: 6px; color: var(--green); font-size: 12px; font-weight: 500; }
+  [data-recommended='true'] .recommended { display: inline; }
+  .system p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .system .help { margin: 12px 0 0; }
+  .download-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+  .download-buttons .btn { font-size: 14px; }
+  .unavailable { border-style: dashed; color: var(--muted); }
+  .all-releases { display: inline-block; margin-top: 4px; font-size: 14px; }
+</style>

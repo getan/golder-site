@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../content';
-import { content, SITE } from '../content';
+import { content } from '../content';
+import DownloadGuide from './DownloadGuide.astro';
 
 interface Props {
   lang: Lang;
@@ -15,12 +16,7 @@ const c = content[lang].quickstart;
     <div class="desktop-start">
       <h3>{c.desktopTitle}</h3>
       <p>{c.desktopBody}</p>
-      <a class="btn primary" href={SITE.releases} rel="noopener">{c.desktopAction} ↗</a>
-      <aside class="mac-notice" aria-label={c.macNoticeTitle}>
-        <h4>{c.macNoticeTitle}</h4>
-        <p>{c.macNotice}</p>
-        <a href={`${SITE.repo}/blob/master/docs/gui-packaging.md#macos-what-makes-it-double-clickable-elsewhere`} rel="noopener">{c.macNoticeLink} ↗</a>
-      </aside>
+      <DownloadGuide lang={lang} />
     </div>
     <div class="steps">
       {c.steps.map((s, i) => (
@@ -43,8 +39,4 @@ const c = content[lang].quickstart;
   .desktop-start { margin-bottom: 28px; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); }
   .desktop-start h3 { margin: 0 0 8px; font-size: 18px; }
   .desktop-start > p { margin: 0 0 16px; color: var(--muted); }
-  .mac-notice { margin-top: 22px; padding: 16px; border-left: 3px solid var(--yellow); background: var(--panel-2); border-radius: 4px; }
-  .mac-notice h4 { margin: 0 0 6px; font-size: 14px; color: var(--text); }
-  .mac-notice p { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
-  .mac-notice a { font-size: 14px; }
 </style>

@@ -56,7 +56,7 @@ const zh = {
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     ctaDesktop: '下载桌面版',
-    installHint: '这是 CLI 安装命令；桌面版请从 Releases 单独下载。浏览器功能需要本机安装 Chromium。',
+    installHint: '这是 CLI 安装命令；桌面版请点击上方按钮选择。浏览器功能需要本机安装 Chromium。',
     guiAlt: 'Golder GUI 实际界面：项目与会话导航、Agent 对话和应用内架构图预览',
     guiCaption: '桌面版实际界面：项目、会话、Agent 对话与 SVG 预览。',
     videoTitle: '终端工作区 — 真实会话（空闲段已掐掉）',
@@ -176,9 +176,9 @@ const zh = {
       },
       {
         icon: 'globe',
-        title: '网络按次授权，代理按 provider',
+        title: '网络按次授权，代理可选择',
         body:
-          '20 个内置网关，覆盖 OpenAI Chat / OpenAI Responses / Anthropic Messages / Gemini 四种线上协议，也可指向任意 OpenAI 兼容端点；网络默认关闭且按次授权——需要联网的调用在参数里声明，auto 下随评审通过的调用一起放行，ask 下与外部路径、沙箱外运行合并进同一个弹窗；没有持久化网络白名单，也没有单独的 /network 命令。/proxy 按 provider 单独走代理，未选中的直连、不继承 shell 的 HTTP_PROXY。',
+          '20 个内置网关，覆盖 OpenAI Chat / OpenAI Responses / Anthropic Messages / Gemini 四种线上协议，也可指向任意 OpenAI 兼容端点；网络默认关闭且按次授权——需要联网的调用在参数里声明，auto 下随评审通过的调用一起放行，ask 下与外部路径、沙箱外运行合并进同一个弹窗；没有持久化网络白名单，也没有单独的 /network 命令。/proxy 可分别选择 provider，也能用 browser on 让 Chromium pane 走同一个代理；未选中的直连、不继承 shell 的 HTTP_PROXY。',
       },
     ] as Feature[],
   },
@@ -198,10 +198,10 @@ const zh = {
     title: '三步上手',
     sub: '桌面版和 CLI 分开安装；下面是两种入口。',
     desktopTitle: '先试试 Golder GUI',
-    desktopBody: '从官方 Releases 下载 macOS DMG、Windows 安装程序或 Linux 软件包。启动后选择项目，在设置中配置模型与凭证，即可通过桌面界面开始对话。',
+    desktopBody: '选择你的电脑版本下载安装。启动后选择项目，在设置中配置模型与凭证，即可通过桌面界面开始对话。',
     desktopAction: '下载桌面版',
     macNoticeTitle: 'macOS 首次打开提示',
-    macNotice: '当前 GUI 包使用临时签名，尚未经过 Apple 公证，首次打开时可能提示无法验证开发者。请仅从官方 Releases 下载，确认来源后可在「系统设置 → 隐私与安全性」选择「仍要打开」。计划近期加入 Apple Developer ID 签名和公证，以消除这类提示；其他安全告警或系统权限提示仍需分别判断。',
+    macNotice: '新版 macOS GUI 已使用 Developer ID 签名并经过 Apple 公证。首次打开时可能要求确认打开从互联网下载的应用；辅助功能和屏幕录制等系统权限仍需按需授权。',
     macNoticeLink: '查看 macOS 安装说明',
     steps: [
       {
@@ -230,8 +230,8 @@ const zh = {
     sub: '还有别的问题？到 GitHub 提 issue。',
     items: [
       {
-        q: '为什么 macOS 首次打开 GUI 会提示无法验证开发者？',
-        a: '当前发布包使用临时签名，尚未经过 Apple 公证。请只从官方 Releases 下载，确认来源后在系统设置的「隐私与安全性」中选择「仍要打开」。我们计划近期加入 Developer ID 签名和公证；辅助功能、屏幕录制等系统授权仍按需请求。不要把其他安全告警一概当作签名提示。',
+        q: 'macOS GUI 经过签名和公证了吗？',
+        a: '新版 macOS GUI 已使用 Developer ID 签名并经过 Apple 公证；旧版可能尚未公证。首次打开时，系统仍可能要求确认打开从互联网下载的应用；辅助功能、屏幕录制等系统授权也可能出现。请只从官方 Releases 下载，遇到其他安全告警时先确认具体原因。',
       },
       {
         q: '需要 Node 或别的运行时吗？',
@@ -251,7 +251,7 @@ const zh = {
       },
       {
         q: '国内网络能用吗？',
-        a: 'golder 支持按 provider 配代理，国内模型直连；注意本站是 Cloudflare 免费子域，少数网络下可能打不开，仓库和 Releases 始终是备选入口。',
+        a: 'golder 支持按 provider 配代理，国内模型直连；内置 Chromium pane 也能用 /proxy browser on 走同一个代理（下次打开 browser pane 生效）。注意本站是 Cloudflare 免费子域，少数网络下可能打不开，仓库和 Releases 始终是备选入口。',
       },
       {
         q: '和 pi 是什么关系？',
@@ -301,7 +301,7 @@ const en = {
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     ctaDesktop: 'Download desktop app',
-    installHint: 'This command installs the CLI; download the desktop app separately from Releases. Browser features require an installed Chromium.',
+    installHint: 'This command installs the CLI; use the button above to choose the desktop app. Browser features require an installed Chromium.',
     guiAlt: 'Golder GUI showing project and chat navigation, an Agent conversation and an architecture diagram preview',
     guiCaption: 'Golder GUI: projects, sessions, an Agent conversation and an in-app SVG preview.',
     videoTitle: 'Terminal workspace — a real session (idle time trimmed)',
@@ -421,9 +421,9 @@ const en = {
       },
       {
         icon: 'globe',
-        title: 'Network is per call; proxies are per provider',
+        title: 'Network is per call; proxies are selective',
         body:
-          '20 built-in gateways across four wire formats — OpenAI Chat, OpenAI Responses, Anthropic Messages, Gemini — plus any OpenAI-compatible endpoint. The network is off by default and granted per call: a call declares what it needs, auto grants it with the reviewer’s approval, and ask folds it into the same dialog as outside paths and sandbox escapes. There is no persistent network allow-list and no separate /network command. /proxy routes per provider: unselected ones go direct and ignore the shell’s HTTP_PROXY.',
+          '20 built-in gateways across four wire formats — OpenAI Chat, OpenAI Responses, Anthropic Messages, Gemini — plus any OpenAI-compatible endpoint. The network is off by default and granted per call: a call declares what it needs, auto grants it with the reviewer’s approval, and ask folds it into the same dialog as outside paths and sandbox escapes. There is no persistent network allow-list and no separate /network command. /proxy selects providers independently and can route Chromium panes with browser on; unselected routes go direct and ignore the shell’s HTTP_PROXY.',
       },
     ] as Feature[],
   },
@@ -443,10 +443,10 @@ const en = {
     title: 'Get started in three steps',
     sub: 'The desktop app and CLI are installed separately. Choose the entry point that fits your work.',
     desktopTitle: 'Try Golder GUI',
-    desktopBody: 'Download the macOS DMG, Windows installer or Linux package from the official Releases page. Open a project and configure a model and credential in Settings to start a conversation.',
+    desktopBody: 'Choose the download for your computer. Open a project and configure a model and credential in Settings to start a conversation.',
     desktopAction: 'Download desktop app',
     macNoticeTitle: 'Opening the app on macOS',
-    macNotice: 'Current GUI packages are ad-hoc signed and not yet notarized, so macOS may warn that the developer cannot be verified. Download only from official Releases; after verifying the source, use Open Anyway in System Settings → Privacy & Security. Developer ID signing and notarization are planned soon to remove this warning; other security alerts and system permission prompts still need their own consideration.',
+    macNotice: 'Recent macOS GUI packages are Developer ID signed and Apple-notarized. The first launch may ask you to confirm an internet download; Accessibility and Screen Recording permissions may still be requested.',
     macNoticeLink: 'Read macOS installation details',
     steps: [
       {
@@ -475,8 +475,8 @@ const en = {
     sub: 'Something else on your mind? Open an issue on GitHub.',
     items: [
       {
-        q: 'Why does macOS warn when I first open the GUI?',
-        a: 'Current GUI packages are ad-hoc signed and not yet notarized. Download only from official Releases and, after confirming the source, use Open Anyway in System Settings → Privacy &amp; Security. Developer ID signing and notarization are planned soon; Accessibility and Screen Recording permissions may still be requested. Do not treat every security alert as a signing warning.',
+        q: 'Is the macOS GUI signed and notarized?',
+        a: 'Recent macOS GUI releases are Developer ID signed and Apple-notarized; older versions may not be. On first launch, macOS may ask to confirm opening an app downloaded from the internet. Accessibility and Screen Recording prompts may also appear. Download only from official Releases and check other security alerts on their own merits.',
       },
       {
         q: 'Does it need Node or any runtime?',
@@ -496,7 +496,7 @@ const en = {
       },
       {
         q: 'Does the site work from mainland China?',
-        a: 'golder itself supports per-provider proxies and connects directly to domestic models. This site, however, is a free Cloudflare subdomain and may be unreachable on some networks — the GitHub repo and Releases are always the fallback.',
+        a: 'golder itself supports per-provider proxies and connects directly to domestic models; its Chromium panes can share the same proxy with /proxy browser on (applied on the next browser launch). This site, however, is a free Cloudflare subdomain and may be unreachable on some networks — the GitHub repo and Releases are always the fallback.',
       },
       {
         q: 'Relation to pi?',
