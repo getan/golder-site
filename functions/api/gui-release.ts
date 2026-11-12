@@ -19,9 +19,23 @@ const MAX_STALE = 24 * 60 * 60_000;
 let inFlight: Promise<Snapshot> | undefined;
 
 class ReleaseLookupError extends Error {
-  constructor(readonly reason: 'http' | 'timeout' | 'network' | 'invalid_json' | 'invalid_metadata', readonly status?: number) {
+  constructor(readonly reason: 'http' | 'timeout' | 'network' | 'invalid_json' | 'invalid_metadata', readonly status?: number,
+    readonly exceptionType?: string, readonly exceptionCode?: string) {
     super(reason);
   }
+}
+
+// Only predetermined values are logged; exception strings may contain secrets.
+function safeException(error: unknown): { type: string; code: string } {
+  const value = error && typeof error === 'object' ? error as { name?: unknown; code?: unknown; cause?: unknown } : {};
+  const cause = value.cause && typeof value.cause === 'object' ? value.cause as { code?: unknown } : {};
+  const types = ['TypeError', 'Error', 'AbortError', 'TimeoutError', 'DOMException', 'RangeError'];
+  const codes = ['ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'EAI_AGAIN', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_SOCKET'];
+  return {
+    type: typeof value.name === 'string' && types.includes(value.name) ? value.name : 'other',
+    code: typeof value.code === 'string' && codes.includes(value.code) ? value.code :
+      typeof cause.code === 'string' && codes.includes(cause.code) ? cause.code : 'other',
+  };
 }
 
 async function fetchRelease(token?: string): Promise<Snapshot> {
@@ -36,8 +50,9 @@ async function fetchRelease(token?: string): Promise<Snapshot> {
     res = await fetch('https://api.github.com/repos/getan/golder/releases/latest', {
       headers, redirect: 'error', signal,
     });
-  } catch {
-    throw new ReleaseLookupError(signal.aborted ? 'timeout' : 'network');
+  } catch (error) {
+    const safe = safeException(error);
+    throw new ReleaseLookupError(signal.aborted ? 'timeout' : 'network', undefined, safe.type, safe.code);
   }
   if (!res.ok) throw new ReleaseLookupError('http', res.status);
   let data: { tag_name?: unknown; assets?: unknown } | null;
@@ -101,6 +116,8 @@ export const onRequestGet = async (ctx: Context): Promise<Response> => {
       console.error('gui-release upstream lookup failed', {
         reason: error instanceof ReleaseLookupError ? error.reason : 'unknown',
         status: error instanceof ReleaseLookupError ? error.status : undefined,
+        exception_type: error instanceof ReleaseLookupError ? error.exceptionType : undefined,
+        exception_code: error instanceof ReleaseLookupError ? error.exceptionCode : undefined,
         authenticated: Boolean(ctx.env?.GITHUB_TOKEN?.trim()),
         stale_available: Boolean(snapshot),
       });

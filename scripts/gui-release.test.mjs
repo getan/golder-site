@@ -53,11 +53,18 @@ test('authenticated upstream, bounded cache, stale fallback and fail closed', as
     res = await onRequestGet(ctx);
     assert.equal(res.status, 502);
     assert.equal((await res.text()).includes('secret'), false);
-    assert.deepEqual(logs[1][1], { reason: 'http', status: 403, authenticated: true, stale_available: false });
-    globalThis.fetch = async () => { throw new Error('secret from a network error'); };
+    assert.deepEqual(logs[1][1], { reason: 'http', status: 403, exception_type: undefined, exception_code: undefined, authenticated: true, stale_available: false });
+    globalThis.fetch = async () => { throw new TypeError('secret from a network error', { cause: { code: 'ECONNRESET' } }); };
     res = await onRequestGet(ctx);
     assert.equal(res.status, 502);
     assert.equal(logs[2][1].reason, 'network');
+    assert.equal(logs[2][1].exception_type, 'TypeError');
+    assert.equal(logs[2][1].exception_code, 'ECONNRESET');
+    globalThis.fetch = async () => { throw { name: 'secret', code: 'secret' }; };
+    res = await onRequestGet(ctx);
+    assert.equal(res.status, 502);
+    assert.equal(logs[3][1].exception_type, 'other');
+    assert.equal(logs[3][1].exception_code, 'other');
     assert.equal(JSON.stringify(logs).includes('secret'), false);
   } finally {
     globalThis.fetch = oldFetch;
