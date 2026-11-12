@@ -22,7 +22,7 @@ test('authenticated upstream, bounded cache, stale fallback and fail closed', as
   globalThis.fetch = async (_url, init) => {
     hits++;
     assert.equal(init.headers.authorization, 'Bearer secret');
-    assert.equal(init.redirect, 'error');
+    assert.equal(init.redirect, 'manual');
     if (down) return new Response('', { status: 403 });
     return Response.json({ tag_name: 'v1.2.4', assets: [
       { name: 'golder-gui-1.2.4-arm64.dmg', state: 'uploaded', size: 123, digest },
@@ -65,6 +65,13 @@ test('authenticated upstream, bounded cache, stale fallback and fail closed', as
     assert.equal(res.status, 502);
     assert.equal(logs[3][1].exception_type, 'other');
     assert.equal(logs[3][1].exception_code, 'other');
+    globalThis.fetch = async (_url, init) => {
+      assert.equal(init.redirect, 'manual');
+      return new Response(null, { status: 302, headers: { location: 'https://example.com/' } });
+    };
+    res = await onRequestGet(ctx);
+    assert.equal(res.status, 502);
+    assert.equal(logs[4][1].status, 302);
     assert.equal(JSON.stringify(logs).includes('secret'), false);
   } finally {
     globalThis.fetch = oldFetch;

@@ -48,7 +48,9 @@ async function fetchRelease(token?: string): Promise<Snapshot> {
   let res: Response;
   try {
     res = await fetch('https://api.github.com/repos/getan/golder/releases/latest', {
-      headers, redirect: 'error', signal,
+      // Workers may reject redirect: 'error'. Manual mode prevents forwarding
+      // the Authorization header, and non-2xx responses are rejected below.
+      headers, redirect: 'manual', signal,
     });
   } catch (error) {
     const safe = safeException(error);
