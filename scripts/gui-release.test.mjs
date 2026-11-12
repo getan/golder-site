@@ -10,8 +10,10 @@ const bundle = await esbuild.build({
 const { onRequestGet } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].contents).toString('base64')}`);
 
 test('authenticated upstream, bounded cache, stale fallback and fail closed', async () => {
-  const oldFetch = globalThis.fetch, oldCaches = globalThis.caches;
+  const oldFetch = globalThis.fetch, oldCaches = globalThis.caches, oldError = console.error;
   let stored, hits = 0, down = false;
+  const logs = [];
+  console.error = (...args) => logs.push(args);
   const digest = 'sha256:' + 'a'.repeat(64);
   globalThis.caches = { default: {
     match: async () => stored?.clone(),
@@ -51,8 +53,15 @@ test('authenticated upstream, bounded cache, stale fallback and fail closed', as
     res = await onRequestGet(ctx);
     assert.equal(res.status, 502);
     assert.equal((await res.text()).includes('secret'), false);
+    assert.deepEqual(logs[1][1], { reason: 'http', status: 403, authenticated: true, stale_available: false });
+    globalThis.fetch = async () => { throw new Error('secret from a network error'); };
+    res = await onRequestGet(ctx);
+    assert.equal(res.status, 502);
+    assert.equal(logs[2][1].reason, 'network');
+    assert.equal(JSON.stringify(logs).includes('secret'), false);
   } finally {
     globalThis.fetch = oldFetch;
     globalThis.caches = oldCaches;
+    console.error = oldError;
   }
 });

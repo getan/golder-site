@@ -18,19 +18,36 @@ const SOFT_TTL = 60_000;
 const MAX_STALE = 24 * 60 * 60_000;
 let inFlight: Promise<Snapshot> | undefined;
 
+class ReleaseLookupError extends Error {
+  constructor(readonly reason: 'http' | 'timeout' | 'network' | 'invalid_json' | 'invalid_metadata', readonly status?: number) {
+    super(reason);
+  }
+}
+
 async function fetchRelease(token?: string): Promise<Snapshot> {
   const headers: Record<string, string> = {
     'user-agent': 'golder-site (+https://golder-cli.pages.dev)',
     accept: 'application/vnd.github+json',
   };
   if (token?.trim()) headers.authorization = `Bearer ${token.trim()}`;
-  const res = await fetch('https://api.github.com/repos/getan/golder/releases/latest', {
-    headers, redirect: 'error', signal: AbortSignal.timeout(5000),
-  });
-  if (!res.ok) throw new Error(`GitHub API returned ${res.status}`);
-  const data = await res.json() as { tag_name?: unknown; assets?: unknown };
-  if (typeof data.tag_name !== 'string' || !/^v\d+\.\d+\.\d+$/.test(data.tag_name) || !Array.isArray(data.assets)) {
-    throw new Error('invalid release metadata');
+  const signal = AbortSignal.timeout(5000);
+  let res: Response;
+  try {
+    res = await fetch('https://api.github.com/repos/getan/golder/releases/latest', {
+      headers, redirect: 'error', signal,
+    });
+  } catch {
+    throw new ReleaseLookupError(signal.aborted ? 'timeout' : 'network');
+  }
+  if (!res.ok) throw new ReleaseLookupError('http', res.status);
+  let data: { tag_name?: unknown; assets?: unknown } | null;
+  try {
+    data = await res.json() as typeof data;
+  } catch {
+    throw new ReleaseLookupError('invalid_json');
+  }
+  if (!data || typeof data.tag_name !== 'string' || !/^v\d+\.\d+\.\d+$/.test(data.tag_name) || !Array.isArray(data.assets)) {
+    throw new ReleaseLookupError('invalid_metadata');
   }
   const assets = data.assets.flatMap((value: unknown) => {
     if (!value || typeof value !== 'object') return [];
@@ -79,7 +96,14 @@ export const onRequestGet = async (ctx: Context): Promise<Response> => {
     try {
       snapshot = await refresh(cache, key, ctx.env?.GITHUB_TOKEN);
       status = 'miss';
-    } catch {
+    } catch (error) {
+      // Never log raw exceptions, response bodies, headers, or the token.
+      console.error('gui-release upstream lookup failed', {
+        reason: error instanceof ReleaseLookupError ? error.reason : 'unknown',
+        status: error instanceof ReleaseLookupError ? error.status : undefined,
+        authenticated: Boolean(ctx.env?.GITHUB_TOKEN?.trim()),
+        stale_available: Boolean(snapshot),
+      });
       if (!snapshot) return new Response(JSON.stringify({ error: 'release metadata unavailable' }), {
         status: 502, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
       });
