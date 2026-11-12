@@ -47,6 +47,7 @@ npm run deploy
 | 变量 | 说明 |
 |---|---|
 | `PURGE_TOKEN` | 任意随机串（如 `openssl rand -hex 32`），发版时用来作废版本缓存 |
+| `GITHUB_TOKEN` | `/api/gui-release` 回源用的 GitHub 只读 token；建议配置为 Pages 加密变量，Production 和 Preview 分别配置。未配置时使用匿名 API，仍可能被限流。 |
 
 同一个值还要写进主仓库 [getan/golder](https://github.com/getan/golder) 的 Secrets
 （名字也叫 `PURGE_TOKEN`），release workflow 发布成功后会带着它调本站的
@@ -66,6 +67,17 @@ npm run deploy
 
 没设置这个变量时不会发出任何第三方请求。Cloudflare Pages 的 runtime 环境变量
 不参与 Astro 构建，所以不要配在 Pages 项目里。
+
+## GUI 更新元数据
+
+`/api/gui-release` 独立于 `/api/latest`：服务端从 GitHub Releases API 获取
+tag、已上传 GUI 包的 size 和 SHA-256，并在 Cloudflare Cache API 中缓存 60 秒；
+回源失败时可使用最多 24 小时的快照（`x-cache-status: stale-error`）。缓存按
+Cloudflare 数据中心分别保存，冷缓存仍需访问 GitHub。`GITHUB_TOKEN` 是 Pages
+运行时 secret，使用可读取公开仓库的最小权限 token；绝不放进客户端或响应。
+更新客户端会验证包名、来源 URL、size 和 SHA-256；站点本身也属于可信元数据
+来源，散列校验不是发布者签名，无法防止站点和下载链路同时被攻破。
+发布站点后还需发布包含新更新逻辑的 GUI；旧版 GUI 不会自动使用此接口。
 
 ## `/api/latest` 的缓存策略
 

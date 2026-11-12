@@ -11,7 +11,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check:functions": "node scripts/check-functions.mjs && node --test scripts/gui-downloads.test.mjs",
+    "check:functions": "node scripts/check-functions.mjs && node --test scripts/gui-downloads.test.mjs scripts/gui-release.test.mjs",
     "deploy": "astro build && wrangler pages deploy dist --project-name golder-cli --branch main"
   },
   "dependencies": {
