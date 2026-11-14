@@ -1,7 +1,5 @@
 ---
-// 首屏演示视频：真实录制的 golder workspace 会话（真 PTY + pyte 逐帧渲染），
-// 不是合成的示意画面。资产在 public/demo/ 下，由 scripts/ 的 snapshot.py
-// 产线重录（见 scripts/README.md）。
+// 首屏演示视频：真实录制的 golder workspace 会话，资产在 public/demo/ 下。
 interface Props {
   title: string;
   caption: string;
@@ -15,16 +13,14 @@ const { title, caption } = Astro.props;
       <span class="title">{title}</span>
     </div>
     <video
-      autoplay
-      muted
-      loop
+      controls
       playsinline
       preload="metadata"
-      poster="/demo/poster.jpg"
+      poster="/demo/browser-backend-poster.jpg"
       aria-label={caption}
     >
-      <source src="/demo/demo.webm" type="video/webm" />
-      <source src="/demo/demo.mp4" type="video/mp4" />
+      <source src="/demo/browser-backend.mp4" type="video/mp4" />
+      <source src="/demo/browser-backend.webm" type="video/webm" />
     </video>
   </div>
   <div class="demo-caption">{caption}</div>

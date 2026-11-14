@@ -59,9 +59,9 @@ const zh = {
     installHint: '这是 CLI 安装命令；桌面版请点击上方按钮选择。浏览器功能可使用本机安装的 Chrome 或 Chromium。',
     guiAlt: 'Golder GUI 实际界面：项目与会话导航、Agent 对话和应用内架构图预览',
     guiCaption: '桌面版实际界面：项目、会话、Agent 对话与 SVG 预览。',
-    videoTitle: '终端工作区 — 真实会话（空闲段已掐掉）',
+    videoTitle: '终端工作区 — 浏览器与后端协作',
     videoCaption:
-      '真实录制：左边 agent 自己读码、打补丁，右边 shell 里 go test 从红到绿；中间的等待已剪掉（37 秒）',
+      '真实录制：agent 在同一工作区开发、验证后端并操作浏览器（3 分 31 秒，4 倍速）。',
   },
   highlights: {
     title: '为什么是 golder',
@@ -304,9 +304,9 @@ const en = {
     installHint: 'This command installs the CLI; use the button above to choose the desktop app. Browser features can use an installed Chrome or Chromium.',
     guiAlt: 'Golder GUI showing project and chat navigation, an Agent conversation and an architecture diagram preview',
     guiCaption: 'Golder GUI: projects, sessions, an Agent conversation and an in-app SVG preview.',
-    videoTitle: 'Terminal workspace — a real session (idle time trimmed)',
+    videoTitle: 'Terminal workspace — browser and backend together',
     videoCaption:
-      'Recorded for real: the agent reads and patches on the left while go test goes red to green in a shell pane on the right; the waits are trimmed (37s)',
+      'A real session: the agent develops and checks a backend while using the browser in the same workspace (3:31, 4× speed).',
   },
   highlights: {
     title: 'Why golder',
