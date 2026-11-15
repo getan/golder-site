@@ -1,11 +1,13 @@
 ---
 import { content, SITE, type Lang } from '../content';
+import DemoVideo from './DemoVideo.astro';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const c = content[lang].architecture;
+const hero = content[lang].hero;
 ---
 <section id="architecture">
   <div class="wrap">
@@ -17,13 +19,29 @@ const c = content[lang].architecture;
       </a>
       <figcaption>{c.caption}</figcaption>
     </figure>
-    <figure class="android-figure">
-      <img src="/demo/golder-android.png" alt={c.androidAlt} width="610" height="900" loading="lazy" />
-      <figcaption>
-        <strong>{c.androidTitle}</strong>
-        {c.androidBody} {c.androidCaption}
-      </figcaption>
-    </figure>
+    <div class="showcase-grid">
+      <figure class="showcase-card">
+        <a class="shot" href="/demo/browser-backend-poster.jpg" target="_blank" rel="noopener">
+          <img src="/demo/browser-backend-poster.jpg" alt={c.tuiAlt} width="1280" height="784" loading="lazy" />
+        </a>
+        <figcaption><strong>{c.tuiTitle}</strong> {c.tuiCaption}</figcaption>
+      </figure>
+      <figure class="showcase-card">
+        <a class="shot" href="/demo/golder-gui.png" target="_blank" rel="noopener">
+          <img src="/demo/golder-gui.png" alt={c.guiAlt} width="2364" height="1558" loading="lazy" />
+        </a>
+        <figcaption><strong>{c.guiTitle}</strong> {c.guiCaption}</figcaption>
+      </figure>
+      <figure class="showcase-card android">
+        <a class="shot" href="/demo/golder-android.png" target="_blank" rel="noopener">
+          <img src="/demo/golder-android.png" alt={c.androidAlt} width="610" height="900" loading="lazy" />
+        </a>
+        <figcaption><strong>{c.androidTitle}</strong> {c.androidBody} {c.androidCaption}</figcaption>
+      </figure>
+    </div>
+    <div id="demo" class="architecture-demo">
+      <DemoVideo title={hero.videoTitle} caption={hero.videoCaption} />
+    </div>
     <div class="grid">
       {c.items.map((item) => (
         <article class="card">
@@ -41,9 +59,18 @@ const c = content[lang].architecture;
   .architecture-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 12px; background: #faf9f6; }
   .architecture-figure a { display: block; }
   .architecture-figure figcaption { margin-top: 10px; color: var(--muted); font-size: 13px; }
-  .android-figure { max-width: 360px; margin: 28px auto; }
-  .android-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 18px; background: #faf9f6; }
-  .android-figure figcaption { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-  .android-figure figcaption strong { display: block; color: var(--text); margin-bottom: 2px; }
+  .showcase-grid { max-width: 1100px; margin: 0 auto 28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .showcase-card { margin: 0; }
+  .showcase-card .shot { height: 270px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: #faf9f6; }
+  .showcase-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .showcase-card.android img { object-fit: contain; }
+  .showcase-card figcaption { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .showcase-card figcaption strong { color: var(--text); }
+  .architecture-demo { max-width: 900px; margin: 0 auto 32px; }
+  @media (max-width: 800px) {
+    .showcase-grid { grid-template-columns: 1fr; }
+    .showcase-card .shot { height: auto; aspect-ratio: 16 / 10; }
+    .showcase-card.android .shot { aspect-ratio: 4 / 5; }
+  }
   .architecture-link { margin: 20px 0 0; font-size: 14px; }
 </style>
