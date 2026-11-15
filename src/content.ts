@@ -34,9 +34,9 @@ export interface FaqItem {
 
 const zh = {
   meta: {
-    title: 'golder — 桌面与终端的 AI 编码助手',
+    title: 'golder — 桌面、Android 与终端的 AI 编码助手',
     description:
-      '用 Go 编写的开源 AI 编码助手：原生桌面应用、终端工作区和 CLI 共享 Agent 核心，连接模型、文件、命令和浏览器，支持审批与沙箱。',
+      '用 Go 编写的开源 AI 编码助手：原生桌面、Android App、终端工作区和 CLI 共享 Agent 核心，连接模型、文件、命令、浏览器和 Android CI，支持审批与沙箱。',
   },
   nav: {
     demo: '演示',
@@ -50,9 +50,9 @@ const zh = {
   },
   hero: {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
-    title: '桌面与终端的 AI 编码助手',
+    title: '桌面、Android 与终端的 AI 编码助手',
     lead:
-      'Golder 是用 Go 编写的开源 AI 编码助手。用原生 GUI 管理项目、对话、工具和审批；用终端工作区并排运行 agent、shell 和浏览器；也可以用 CLI、REPL 或无头模式接入已有工作流。',
+      'Golder 是用 Go 编写的开源 AI 编码助手。用原生 GUI 管理项目、对话、工具和审批；用 Android 原生 App 在手机上运行共享 Agent、构建并安装 APK；用终端工作区并排运行 agent、shell 和浏览器；也可以用 CLI、REPL 或无头模式接入已有工作流。',
     ctaPrimary: '三步上手',
     ctaSecondary: '在 GitHub 上看源码',
     ctaDesktop: '下载桌面版',
@@ -65,8 +65,9 @@ const zh = {
   },
   highlights: {
     title: '为什么是 golder',
-    sub: '同一套 Agent 核心，适合桌面、终端与自动化。',
+    sub: '同一套 Agent 核心，适合桌面、Android、终端与自动化。',
     items: [
+      { icon: 'box', title: 'Android 原生 App', body: 'Kotlin/Compose 通过 JNI 运行共享 Go Agent；Keystore 保存凭据，前台服务保持后台任务，结构化 Git 与 GitHub Actions APK 构建/下载/安装都在手机上完成。' },
       {
         icon: 'box',
         title: '原生桌面工作台',
@@ -114,6 +115,8 @@ const zh = {
     title: '更多特性',
     sub: '安全边界、长任务、会话管理都是内建的——这些才是每天用得到的部分。',
     items: [
+      { icon: 'box', title: 'Android 端到端构建', body: 'android_build 复用当前 commit 的成功 CI；android_download 只下载已有产物；android_install 或对话里的 Install APK 直接打开系统安装器，不需要为了安装重新构建。' },
+      { icon: 'key', title: 'Android 上的 GitHub 登录', body: '默认使用 GitHub 设备码登录（类似 gh auth login），也可切到 Fine-grained PAT 做最小权限授权。PAT 需要 Contents、Workflows、Actions 读写；退出登录只清本机 token，撤销授权在 GitHub 完成。' },
       {
         icon: 'terminal',
         title: '桌面、终端与无头模式',
@@ -184,13 +187,17 @@ const zh = {
   },
   architecture: {
     title: '从界面到 Agent：Golder 如何工作',
-    sub: '一张图看清桌面、终端、模型、工具和权限边界之间的关系。',
-    alt: 'Golder 系统架构图：GUI、终端与 CLI 连接 Agent 运行时、模型、工具、会话和安全边界',
+    sub: '一张图看清桌面、Android、终端、模型、工具和权限边界之间的关系。',
+    alt: 'Golder 系统架构图：GUI、Android、终端与 CLI 连接 Agent 运行时、模型、工具、Android CI 和安全边界',
+    androidTitle: 'Android 主会话',
+    androidBody: '同一套 Agent 核心在手机上通过 JNI 运行；构建结果可直接 Install APK，上下文占用会在重开 App 后恢复。',
+    androidAlt: 'Golder Android 主会话：Android 构建结果、Install APK 操作和上下文占用',
+    androidCaption: 'Android 演示：GitHub Actions 构建成功、Install APK 操作和 6% 上下文占用。',
     caption: '架构概览为简化示意；具体权限和平台支持以实际工具及配置为准。',
     items: [
-      { title: '01 / 选择入口', body: '原生 GUI 直接使用共享 Agent 核心；终端 TUI / REPL、CLI 和 workspace 面向命令行与自动化。Workspace 的 daemon 与 agent pane 是独立进程。' },
+      { title: '01 / 选择入口', body: '原生 GUI、Android App、终端 TUI / REPL、CLI 和 workspace 使用同一个 Agent 核心；Android 通过 JNI 接入，workspace 的 daemon 与 agent pane 是独立进程。' },
       { title: '02 / Agent 循环', body: '运行时组装上下文、调用所选模型、执行工具并继续对话；会话、压缩与记忆帮助任务延续。' },
-      { title: '03 / 能力与边界', body: '文件、Shell、Web、MCP 和 Skills 连接本地与外部环境；适用调用经权限、审批、路径授权和沙箱处理，再访问项目、浏览器或用户选定的窗口。' },
+      { title: '03 / 能力与边界', body: '文件、Git、Shell、Web、MCP、Skills 和 Android 构建/下载/安装工具连接本地与外部环境；适用调用经权限、审批、路径授权和沙箱处理，再访问项目、浏览器、窗口或 Android 安装包。' },
     ],
     link: '查看主仓库文档',
   },
@@ -258,6 +265,10 @@ const zh = {
         a: 'golder 是 pi 的 Go 重实现，此后独立演进，MIT 许可。',
       },
       {
+        q: 'Android 上怎么登录 GitHub？',
+        a: '设置 → GitHub 默认选 GitHub 登录；点登录后打开 github.com/login/device 输入设备码，授权后 access token 会自动刷新。需要最小权限时切到 Fine-grained PAT，选 Contents、Workflows、Actions 为 Read and write。退出登录只删除本机 token；要撤销 GitHub 授权，用“在 GitHub 撤销授权”。',
+      },
+      {
         q: '怎么更新？',
         a: '跑 golder update 即自更新；重跑安装脚本也可以。',
       },
@@ -279,9 +290,9 @@ const zh = {
 
 const en = {
   meta: {
-    title: 'golder — an AI coding agent for desktop and terminal',
+    title: 'golder — an AI coding agent for desktop, Android and terminal',
     description:
-      'An open-source AI coding agent in Go: a native desktop app, terminal workspace and CLI share an Agent core for models, files, commands and the browser, with configurable approvals and sandboxing.',
+      'An open-source AI coding agent in Go: a native desktop app, Android app, terminal workspace and CLI share an Agent core for models, files, commands, browser and Android CI, with configurable approvals and sandboxing.',
   },
   nav: {
     demo: 'Demo',
@@ -295,9 +306,9 @@ const en = {
   },
   hero: {
     eyebrow: 'golder-cli.pages.dev · Go · MIT',
-    title: 'An AI coding agent for desktop and terminal',
+    title: 'An AI coding agent for desktop, Android and terminal',
     lead:
-      'Golder is an open-source AI coding agent written in Go. Manage projects, conversations, tools and approvals in a native GUI; run the agent, a shell and a browser side by side in a terminal workspace; or use the CLI, REPL and headless mode in your existing workflow.',
+      'Golder is an open-source AI coding agent written in Go. Manage projects, conversations, tools and approvals in a native GUI; run the shared Agent in a native Android app with on-device tools and APK install; run the agent, a shell and a browser side by side in a terminal workspace; or use the CLI, REPL and headless mode.',
     ctaPrimary: 'Get started',
     ctaSecondary: 'Source on GitHub',
     ctaDesktop: 'Download desktop app',
@@ -310,8 +321,14 @@ const en = {
   },
   highlights: {
     title: 'Why golder',
-    sub: 'A shared Agent core for desktop, terminal and automation.',
+    sub: 'A shared Agent core for desktop, Android, terminal and automation.',
     items: [
+      {
+        icon: 'box',
+        title: 'A native Android app',
+        body:
+          'Kotlin/Compose runs the shared Go Agent over JNI. Keystore-backed credentials, a foreground service for background tasks, structured Git, GitHub Actions APK build/download and an Install APK action keep the mobile workflow on the phone.',
+      },
       {
         icon: 'box',
         title: 'A native desktop workspace',
@@ -359,6 +376,18 @@ const en = {
     title: 'More features',
     sub: 'Safety boundaries, long tasks, and session management are built in — the parts you actually use every day.',
     items: [
+      {
+        icon: 'box',
+        title: 'Android builds without repeated CI',
+        body:
+          'android_build reuses a successful workflow for the current commit; android_download fetches an existing artifact; android_install or the transcript’s Install APK action opens the system installer without rebuilding.',
+      },
+      {
+        icon: 'key',
+        title: 'GitHub login on Android',
+        body:
+          'Device-code login (like gh auth login) is the default, with a Fine-grained PAT tab for least privilege. PAT needs Contents, Workflows and Actions read/write. Sign out clears local tokens; revoke authorization on GitHub.',
+      },
       {
         icon: 'terminal',
         title: 'Desktop, terminal and headless',
@@ -429,13 +458,17 @@ const en = {
   },
   architecture: {
     title: 'From interface to Agent: how Golder works',
-    sub: 'A map of the desktop, terminal, models, tools and permission boundaries.',
-    alt: 'Golder architecture diagram: GUI, terminal and CLI connect to the Agent runtime, models, tools, session state and security boundaries',
+    sub: 'A map of the desktop, Android, terminal, models, tools and permission boundaries.',
+    alt: 'Golder architecture diagram: GUI, Android, terminal and CLI connect to the Agent runtime, models, tools, Android CI and security boundaries',
+    androidTitle: 'Android main session',
+    androidBody: 'The same Agent core runs on the phone over JNI; a build result can install directly, and context usage is restored after reopening the app.',
+    androidAlt: 'Golder Android main session showing an Android build result, the Install APK action and context usage',
+    androidCaption: 'Android demo: a successful GitHub Actions build, the Install APK action and 6% context usage.',
     caption: 'Diagram labels are in Chinese. This overview is simplified; actual permissions and platform support depend on the tool and configuration.',
     items: [
-      { title: '01 / Choose an interface', body: 'The native GUI uses the shared Agent core; the TUI / REPL, CLI and workspace serve terminal and automation workflows. A workspace daemon and its agent panes are separate processes.' },
+      { title: '01 / Choose an interface', body: 'The native GUI, Android app, TUI / REPL, CLI and workspace use the shared Agent core; Android connects over JNI, while a workspace daemon and its agent panes are separate processes.' },
       { title: '02 / The Agent loop', body: 'The runtime assembles context, calls the selected model, executes tools and continues the conversation. Sessions, compaction and memory help work continue.' },
-      { title: '03 / Capabilities and boundaries', body: 'Files, shell, web, MCP and Skills connect local and external resources. Applicable calls pass through permissions, approvals, path grants and sandboxing before reaching a project, browser or user-selected window.' },
+      { title: '03 / Capabilities and boundaries', body: 'Files, Git, shell, web, MCP, Skills and Android build/download/install tools connect local and external resources. Applicable calls pass through permissions, approvals, path grants and sandboxing before reaching a project, browser, window or Android package.' },
     ],
     link: 'Read the project documentation',
   },
@@ -501,6 +534,10 @@ const en = {
       {
         q: 'Relation to pi?',
         a: 'golder is a Go re-implementation of pi, evolving independently under MIT.',
+      },
+      {
+        q: 'How do I sign in to GitHub on Android?',
+        a: 'Settings → GitHub defaults to GitHub login: open github.com/login/device, enter the device code, and the access token refreshes automatically. For least privilege, switch to Fine-grained PAT and grant Contents, Workflows and Actions read/write. Sign out removes local tokens only; to revoke the authorization itself, use Revoke access on GitHub.',
       },
       {
         q: 'How do I update?',

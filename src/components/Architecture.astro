@@ -17,6 +17,13 @@ const c = content[lang].architecture;
       </a>
       <figcaption>{c.caption}</figcaption>
     </figure>
+    <figure class="android-figure">
+      <img src="/demo/golder-android.png" alt={c.androidAlt} width="610" height="900" loading="lazy" />
+      <figcaption>
+        <strong>{c.androidTitle}</strong>
+        {c.androidBody} {c.androidCaption}
+      </figcaption>
+    </figure>
     <div class="grid">
       {c.items.map((item) => (
         <article class="card">
@@ -34,5 +41,9 @@ const c = content[lang].architecture;
   .architecture-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 12px; background: #faf9f6; }
   .architecture-figure a { display: block; }
   .architecture-figure figcaption { margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .android-figure { max-width: 360px; margin: 28px auto; }
+  .android-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 18px; background: #faf9f6; }
+  .android-figure figcaption { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .android-figure figcaption strong { display: block; color: var(--text); margin-bottom: 2px; }
   .architecture-link { margin: 20px 0 0; font-size: 14px; }
 </style>
