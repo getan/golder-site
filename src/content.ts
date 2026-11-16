@@ -190,7 +190,7 @@ const zh = {
   architecture: {
     title: '从界面到 Agent：Golder 如何工作',
     sub: '一张图看清桌面、Android、终端、模型、工具和权限边界之间的关系。',
-    alt: 'Golder 系统架构图：GUI、Android、终端与 CLI 连接 Agent 运行时、模型、工具、Android CI 和安全边界',
+    alt: 'Golder 系统架构图：GUI、Android、终端与 CLI 连接 Agent 运行时、模型、工具、Android CI、Android App 控制和安全边界',
     tuiTitle: 'TUI 工作区',
     tuiAlt: 'Golder workspace 真实会话：agent、后端 shell 和浏览器并排工作',
     tuiCaption: 'agent、后端 shell 和浏览器在同一个终端工作区。',
@@ -468,7 +468,7 @@ const en = {
   architecture: {
     title: 'From interface to Agent: how Golder works',
     sub: 'A map of the desktop, Android, terminal, models, tools and permission boundaries.',
-    alt: 'Golder architecture diagram: GUI, Android, terminal and CLI connect to the Agent runtime, models, tools, Android CI and security boundaries',
+    alt: 'Golder architecture diagram: GUI, Android, terminal and CLI connect to the Agent runtime, models, tools, Android CI, Android app control and security boundaries',
     tuiTitle: 'TUI workspace',
     tuiAlt: 'A real golder workspace session with the agent, a backend shell and a browser side by side',
     tuiCaption: 'The agent, a backend shell and a browser in one terminal workspace.',
